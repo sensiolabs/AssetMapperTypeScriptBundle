@@ -16,6 +16,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class TypeScriptCompileCommand extends Command
 {
+    private const EXCLUDED_FILE_ERROR_MESSAGE = 'Error: cannot process file because it\'s ignored by .swcrc';
+
     public function __construct(
         private TypeScriptBuilder $typeScriptCompiler
     ) {
@@ -34,12 +36,14 @@ class TypeScriptCompileCommand extends Command
         $this->typeScriptCompiler->setOutput($io);
 
         foreach ($this->typeScriptCompiler->runBuild() as $process) {
-            $process->wait(function ($type, $buffer) use ($io) {
-                $io->write($buffer);
-            });
+            $process->wait();
 
             if (!$process->isSuccessful()) {
-                $io->error('Sass build failed');
+                if (str_contains($process->getErrorOutput(), self::EXCLUDED_FILE_ERROR_MESSAGE)) {
+                    $io->note('One or more files have been skipped file because they are ignored');
+                    continue;
+                }
+                $io->error('Typescript build failed');
                 $error = true;
             }
         }

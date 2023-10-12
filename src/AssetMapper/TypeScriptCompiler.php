@@ -22,6 +22,7 @@ class TypeScriptCompiler implements AssetCompilerInterface
         private readonly array $typeScriptFilesPaths,
         private readonly string $jsPathDirectory,
         private readonly string $projectRootDir,
+        private readonly array $ignoredPaths = [],
     )
     {
         $this->fileSystem = new Filesystem();
@@ -30,6 +31,9 @@ class TypeScriptCompiler implements AssetCompilerInterface
     public function supports(MappedAsset $asset): bool
     {
         if (!str_ends_with($asset->sourcePath, '.ts')) {
+            return false;
+        }
+        if (in_array($asset->sourcePath, $this->ignoredPaths, true)) {
             return false;
         }
         foreach ($this->typeScriptFilesPaths as $path) {

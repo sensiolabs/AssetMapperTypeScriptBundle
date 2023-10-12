@@ -15,6 +15,7 @@ class TypeScriptBuilder
         private readonly string $projectRootDir,
         private readonly ?string $binaryPath,
         private readonly bool $embedSourcemap,
+        private readonly array $ignoredPaths = [],
     )
     {
     }
@@ -22,13 +23,21 @@ class TypeScriptBuilder
     public function runBuild(): \Generator
     {
         $binary = $this->createBinary();
+        $fs = new Filesystem();
 
         $args = ['--out-dir', $this->compiledFilesPaths];
-
+        $additionalConf = [];
         if ($this->embedSourcemap) {
             $args = array_merge($args, ['--source-maps', 'true']);
         }
-        $fs = new Filesystem();
+        if ($this->ignoredPaths) {
+            $additionalConf = ["exclude" => array_map(fn ($path) => trim($fs->makePathRelative($path, $this->projectRootDir), '/'), $this->ignoredPaths)];
+//            $args = array_merge($args, ['--ignore', ...array_map(fn ($path) => trim($fs->makePathRelative($path, $this->projectRootDir), '/'), $this->ignoredPaths)]);
+        }
+
+        if ($additionalConf) {
+            $args = array_merge($args, ['--config-json', json_encode($additionalConf)]);
+        }
         foreach ($this->typeScriptFilesPaths as $typeScriptFilePath) {
             $relativePath = $fs->makePathRelative($typeScriptFilePath, $this->projectRootDir);
             if (str_starts_with($relativePath, '..')) {
