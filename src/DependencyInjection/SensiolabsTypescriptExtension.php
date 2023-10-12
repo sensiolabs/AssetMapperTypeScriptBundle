@@ -29,7 +29,8 @@ class SensiolabsTypescriptExtension extends Extension implements ConfigurationIn
             ->replaceArgument(0, $config['source_dir'])
             ->replaceArgument(1, '%kernel.project_dir%/var/compiled_js')
             ->replaceArgument(3, $config['binary'])
-            ->replaceArgument(4, $config['embed_sourcemap']);
+            ->replaceArgument(4, $config['embed_sourcemap'])
+            ->replaceArgument(5, $config['config_file']);
 
         $container->findDefinition('typescript.js_asset_compiler')
             ->replaceArgument(0, $config['source_dir'])
@@ -57,15 +58,19 @@ class SensiolabsTypescriptExtension extends Extension implements ConfigurationIn
                     ->scalarPrototype()
                         ->end()
                     ->defaultValue(['%kernel.project_dir%/assets/typescript'])
-                ->end()
-                    ->scalarNode('binary')
+                    ->end()
+                ->scalarNode('binary')
                     ->info('The TypeScript compiler binary to use')
                     ->defaultNull()
-                ->end()
-                    ->scalarNode('embed_sourcemap')
+                    ->end()
+                ->scalarNode('embed_sourcemap')
                     ->info('Whether to embed the sourcemap in the compiled CSS. By default, enabled only when debug mode is on.')
                     ->defaultValue($this->isDebug)
-                ->end()
+                    ->end()
+                ->scalarNode('config_file')
+                    ->info('Path to .swcrc configuration file to use')
+                    ->defaultValue('%kernel.project_dir%/.swcrc')
+                    ->end()
             ->end();
 
         return $treeBuilder;

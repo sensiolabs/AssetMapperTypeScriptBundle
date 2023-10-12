@@ -18,6 +18,7 @@ return static function (ContainerConfigurator $container) {
             param('kernel.project_dir'),
             abstract_arg('path to binary'),
             abstract_arg('embed sourcemap'),
+            abstract_arg('swc configuration file'),
         ])
         ->set('typescript.command.build', TypeScriptCompileCommand::class)
         ->args([
