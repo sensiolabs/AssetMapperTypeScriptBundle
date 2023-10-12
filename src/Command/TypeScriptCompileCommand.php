@@ -33,7 +33,7 @@ class TypeScriptCompileCommand extends Command
         $error = false;
         $this->typeScriptCompiler->setOutput($io);
 
-        foreach ($this->typeScriptCompiler->runBuild(false) as $process) {
+        foreach ($this->typeScriptCompiler->runBuild() as $process) {
             $process->wait(function ($type, $buffer) use ($io) {
                 $io->write($buffer);
             });
