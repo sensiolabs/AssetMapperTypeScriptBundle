@@ -29,12 +29,14 @@ class SensiolabsTypescriptExtension extends Extension implements ConfigurationIn
             ->replaceArgument(0, $config['source_dir'])
             ->replaceArgument(1, '%kernel.project_dir%/var/compiled_js')
             ->replaceArgument(3, $config['binary'])
-            ->replaceArgument(4, $config['embed_sourcemap']);
+            ->replaceArgument(4, $config['embed_sourcemap'])
+            ->replaceArgument(5, $config['ignore']);
 
         $container->findDefinition('typescript.js_asset_compiler')
             ->replaceArgument(0, $config['source_dir'])
             ->replaceArgument(1, '%kernel.project_dir%/var/compiled_js')
-            ->replaceArgument(2, '%kernel.project_dir%');
+            ->replaceArgument(2, '%kernel.project_dir%')
+            ->replaceArgument(3, $config['ignore']);
     }
 
     public function getConfiguration(array $config, ContainerBuilder $container): ?ConfigurationInterface
@@ -52,20 +54,26 @@ class SensiolabsTypescriptExtension extends Extension implements ConfigurationIn
         $rootNode
             ->children()
                 ->arrayNode('source_dir')
-                    ->info('Path to your TypeScript directories')
+                    ->info('List of paths (files or directories) to your TypeScript directories')
                     ->cannotBeEmpty()
                     ->scalarPrototype()
                         ->end()
                     ->defaultValue(['%kernel.project_dir%/assets/typescript'])
-                ->end()
-                    ->scalarNode('binary')
+                    ->end()
+                ->scalarNode('binary')
                     ->info('The TypeScript compiler binary to use')
                     ->defaultNull()
-                ->end()
-                    ->scalarNode('embed_sourcemap')
+                    ->end()
+                ->scalarNode('embed_sourcemap')
                     ->info('Whether to embed the sourcemap in the compiled CSS. By default, enabled only when debug mode is on.')
                     ->defaultValue($this->isDebug)
-                ->end()
+                    ->end()
+                ->arrayNode('ignore')
+                    ->info('List of paths (files or directories) to exclude from compilation and asset mapping.')
+                    ->scalarPrototype()
+                        ->end()
+                    ->defaultValue([])
+                    ->end()
             ->end();
 
         return $treeBuilder;

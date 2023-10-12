@@ -18,25 +18,27 @@ return static function (ContainerConfigurator $container) {
             param('kernel.project_dir'),
             abstract_arg('path to binary'),
             abstract_arg('embed sourcemap'),
+            abstract_arg('ignore list'),
         ])
         ->set('typescript.command.build', TypeScriptCompileCommand::class)
-        ->args([
-            service('typescript.builder')
-        ])
-        ->tag('console.command')
+            ->args([
+                service('typescript.builder')
+            ])
+            ->tag('console.command')
         ->set('typescript.js_asset_compiler', TypeScriptCompiler::class)
-        ->tag('asset_mapper.compiler', [
-            'priority' => 9
-        ])
-        ->args([
-            abstract_arg('path to typescript source dir'),
-            abstract_arg('path to typescript output directory'),
-            service('typescript.builder'),
-        ])
+            ->tag('asset_mapper.compiler', [
+                'priority' => 9
+            ])
+            ->args([
+                abstract_arg('path to typescript source dir'),
+                abstract_arg('path to typescript output directory'),
+                service('typescript.builder'),
+                abstract_arg('ignore list'),
+            ])
         ->set('typescript.public_asset_path_resolver', TypeScriptPublicPathAssetPathResolver::class)
-        ->decorate('asset_mapper.public_assets_path_resolver')
-        ->args([
-            service('.inner')
-        ]);
+            ->decorate('asset_mapper.public_assets_path_resolver')
+            ->args([
+                service('.inner')
+            ]);
 ;
 };
