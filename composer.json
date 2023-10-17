@@ -1,0 +1,37 @@
+{
+    "name": "sensiolabs/typescript-bundle",
+    "description": "Typescript support for Symfony + AssetMapper",
+    "license": "MIT",
+    "type": "library",
+    "keywords": ["asset-mapper", "typescript"],
+    "authors": [
+        {
+            "name": "Maelan LE BORGNE",
+            "homepage": "https://github.com/maelanleborgne"
+        }
+    ],
+    "require": {
+        "php": ">=8.1",
+        "symfony/asset-mapper": "^6.3",
+        "symfony/console": "^5.4|^6.3",
+        "symfony/http-client": "^5.4|^6.3",
+        "symfony/process": "^5.4|^6.3"
+    },
+    "require-dev": {
+        "symfony/filesystem": "^6.3",
+        "symfony/framework-bundle": "^6.3",
+        "symfony/phpunit-bridge": "^6.3",
+        "phpstan/phpstan": "1.11.x-dev"
+    },
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "Sensiolabs\\TypescriptBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Sensiolabs\\TypescriptBundle\\Tests\\": "tests/"
+        }
+    }
+}
