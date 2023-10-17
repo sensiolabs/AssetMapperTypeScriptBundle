@@ -12,7 +12,6 @@ use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 
 class SensiolabsTypescriptExtension extends Extension implements ConfigurationInterface
 {
-
     private bool $isDebug;
 
     public function load(array $configs, ContainerBuilder $container): void
@@ -27,13 +26,13 @@ class SensiolabsTypescriptExtension extends Extension implements ConfigurationIn
 
         $container->findDefinition('typescript.builder')
             ->replaceArgument(0, $config['source_dir'])
-            ->replaceArgument(1, '%kernel.project_dir%/var/compiled_js')
+            ->replaceArgument(1, '%kernel.project_dir%/var/typescript')
             ->replaceArgument(3, $config['binary'])
             ->replaceArgument(4, $config['embed_sourcemap']);
 
         $container->findDefinition('typescript.js_asset_compiler')
             ->replaceArgument(0, $config['source_dir'])
-            ->replaceArgument(1, '%kernel.project_dir%/var/compiled_js')
+            ->replaceArgument(1, '%kernel.project_dir%/var/typescript')
             ->replaceArgument(2, '%kernel.project_dir%');
     }
 
@@ -56,7 +55,7 @@ class SensiolabsTypescriptExtension extends Extension implements ConfigurationIn
                     ->cannotBeEmpty()
                     ->scalarPrototype()
                         ->end()
-                    ->defaultValue(['%kernel.project_dir%/assets/typescript'])
+                    ->defaultValue(['%kernel.project_dir%/assets'])
                 ->end()
                     ->scalarNode('binary')
                     ->info('The TypeScript compiler binary to use')

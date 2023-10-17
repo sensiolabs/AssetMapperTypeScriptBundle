@@ -58,7 +58,7 @@ class TypeScriptCompiler implements AssetCompilerInterface
         $asset->addFileDependency($jsFile);
 
         if (($content = file_get_contents($jsFile)) === false) {
-            throw new \RuntimeException('The file ' . $jsFile . ' doesn\'t exist, run php bin/console sass:build');
+            throw new \RuntimeException('The file ' . $jsFile . ' doesn\'t exist, run php bin/console typescript:build');
         }
 
         return $content;

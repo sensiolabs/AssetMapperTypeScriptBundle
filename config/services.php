@@ -2,7 +2,7 @@
 //
 use Sensiolabs\TypescriptBundle\AssetMapper\TypeScriptCompiler;
 use Sensiolabs\TypescriptBundle\AssetMapper\TypeScriptPublicPathAssetPathResolver;
-use Sensiolabs\TypescriptBundle\Command\TypeScriptCompileCommand;
+use Sensiolabs\TypescriptBundle\Command\TypeScriptBuildCommand;
 use Sensiolabs\TypescriptBundle\TypeScriptBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\abstract_arg;
@@ -19,7 +19,7 @@ return static function (ContainerConfigurator $container) {
             abstract_arg('path to binary'),
             abstract_arg('embed sourcemap'),
         ])
-        ->set('typescript.command.build', TypeScriptCompileCommand::class)
+        ->set('typescript.command.build', TypeScriptBuildCommand::class)
         ->args([
             service('typescript.builder')
         ])

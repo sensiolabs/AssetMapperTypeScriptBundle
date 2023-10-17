@@ -16,8 +16,8 @@ class TypeScriptCompilerTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $typeScriptFilesPaths = [realpath(self::ASSETS_DIR . '/typescript'), realpath(self::ASSETS_DIR . '/other_dir')];
-        $compiledFilesPath = self::FIXTURE_DIR . '/var/compiled_js';
+        $typeScriptFilesPaths = [realpath(self::ASSETS_DIR), realpath(self::ASSETS_DIR . '/../other_dir')];
+        $compiledFilesPath = self::FIXTURE_DIR . '/var/typescript';
         mkdir($compiledFilesPath, 0777, true);
         $this->compiler = new TypeScriptCompiler(
             $typeScriptFilesPaths,
@@ -49,7 +49,7 @@ class TypeScriptCompilerTest extends TestCase
             ];
         yield 'file_not_in_the_dir' =>
             [
-                new MappedAsset('app.js', self::ASSETS_DIR . '/app.js'),
+                new MappedAsset('app.js', self::ASSETS_DIR . '/../app.js'),
                 false
             ];
         yield 'file_in_the_list' =>
@@ -74,7 +74,7 @@ class TypeScriptCompilerTest extends TestCase
         $assetMapper = $this->createMock(AssetMapperInterface::class);
         $asset = new MappedAsset('typescript/main.ts', realpath(self::ASSETS_DIR . '/typescript/main.ts'));
         $string = "console.log('This is a test');";
-        $compiledFilePath = self::FIXTURE_DIR . '/var/compiled_js/assets/typescript/main.js';
+        $compiledFilePath = self::FIXTURE_DIR . '/var/typescript/assets/typescript/main.js';
         mkdir(dirname($compiledFilePath), 0777, true);
         file_put_contents($compiledFilePath, $string);
         $content = $this->compiler->compile('', $asset, $assetMapper);

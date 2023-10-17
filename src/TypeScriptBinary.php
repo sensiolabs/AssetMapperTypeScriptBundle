@@ -53,9 +53,6 @@ class TypeScriptBinary
         if (!is_dir($this->binaryDownloadDir)) {
             mkdir($this->binaryDownloadDir, 0777, true);
         }
-        if (null === $this->httpClient) {
-            throw new \LogicException('The HttpClientInterface is not available. Try running "composer require symfony/http-client".');
-        }
 
         $url = sprintf(self::SWC_RELEASE_URL_PATTERN, self::VERSION, $this->getBinaryName());
         $this->output?->note(sprintf('Downloading TypeScript binary to %s...', $targetPath));

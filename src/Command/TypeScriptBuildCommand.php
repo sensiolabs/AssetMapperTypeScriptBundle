@@ -14,35 +14,29 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'typescript:build',
     description: 'Compile TypeScript files to JavaScript'
 )]
-class TypeScriptCompileCommand extends Command
+class TypeScriptBuildCommand extends Command
 {
     public function __construct(
-        private TypeScriptBuilder $typeScriptCompiler
+        private TypeScriptBuilder $typeScriptBuilder
     ) {
         parent::__construct();
-    }
-
-    public function configure(): void
-    {
-
     }
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $error = false;
-        $this->typeScriptCompiler->setOutput($io);
+        $this->typeScriptBuilder->setOutput($io);
 
-        foreach ($this->typeScriptCompiler->runBuild() as $process) {
+        foreach ($this->typeScriptBuilder->runBuild() as $process) {
             $process->wait(function ($type, $buffer) use ($io) {
                 $io->write($buffer);
             });
 
             if (!$process->isSuccessful()) {
-                $io->error('Sass build failed');
-                $error = true;
+                $io->error('TypeScript build failed');
+                return self::FAILURE;
             }
         }
-        return $error ? self::FAILURE : self::SUCCESS;
+        return self::SUCCESS;
     }
 }
