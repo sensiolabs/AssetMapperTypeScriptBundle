@@ -4,6 +4,11 @@ namespace Sensiolabs\TypescriptBundle;
 
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\Process\InputStream;
+use Symfony\Component\Process\Process;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfonycasts\SassBundle\SassBinary;
 
 class TypeScriptBuilder
 {
@@ -19,11 +24,15 @@ class TypeScriptBuilder
     {
     }
 
-    public function runBuild(): \Generator
+    public function runBuild(bool $watch): \Generator
     {
         $binary = $this->createBinary();
 
         $args = ['--out-dir', $this->compiledFilesPaths];
+        if ($watch) {
+            // TODO: dl chokidar ?
+            $args[] = '--watch';
+        }
 
         if ($this->embedSourcemap) {
             $args = array_merge($args, ['--source-maps', 'true']);
@@ -35,7 +44,7 @@ class TypeScriptBuilder
                 throw new \Exception(sprintf('The TypeScript file "%s" is not in the project directory "%s".', $typeScriptFilePath, $this->projectRootDir));
             }
             $process = $binary->createProcess(array_merge(['compile', $relativePath], $args));
-            $process->setWorkingDirectory($this->projectRootDir);
+            $process->setWorkingDirectory($this->projectRootDir); // TODO: handle multiple directories
 
             $this->output?->note(sprintf('Executing SWC compile on %s (pass -v to see more details).', $typeScriptFilePath));
             if ($this->output?->isVerbose()) {

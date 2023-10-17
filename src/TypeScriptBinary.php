@@ -18,10 +18,97 @@ class TypeScriptBinary
         private readonly ?string     $binaryPath,
         private ?SymfonyStyle        $output = null,
         private ?HttpClientInterface $httpClient = null,
-        private ?string $binaryName = null,
     )
     {
         $this->httpClient = $httpClient ?? HttpClient::create();
+    }
+
+    public function downloadBinary(): void
+    {
+        $targetPath = $this->getDefaultBinaryPath();
+        if (file_exists($targetPath)) {
+            return;
+        }
+
+        if (!is_dir($this->binaryDownloadDir)) {
+            mkdir($this->binaryDownloadDir, 0777, true);
+        }
+        if (null === $this->httpClient) {
+            throw new \LogicException('The HttpClientInterface is not available. Try running "composer require symfony/http-client".');
+        }
+
+        $url = sprintf(self::SWC_RELEASE_URL_PATTERN, self::VERSION, $this->getBinaryName());
+        print_r('Downloading TypeScript binary...');
+
+        $response = $this->httpClient->request('GET', $url, [
+            'on_progress' => function (int $dlNow, int $dlSize, array $info) use (&$progressBar): void {
+                if (0 === $dlSize) {
+                    return;
+                }
+
+                if (!$progressBar) {
+                    $progressBar = $this->output?->createProgressBar($dlSize);
+                }
+
+                $progressBar?->setProgress($dlNow);
+            },
+        ]);
+        $fileHandler = fopen($targetPath, 'w');
+        foreach ($this->httpClient->stream($response) as $chunk) {
+            fwrite($fileHandler, $chunk->getContent());
+        }
+
+        fclose($fileHandler);
+        chmod($targetPath, 7770); //TODO: remove
+        $progressBar?->finish();
+        $this->output?->writeln('');
+    }
+
+    public function getBinaryName(): string
+    {
+        $os = strtolower(\PHP_OS);
+        $machine = strtolower(php_uname('m'));
+
+        if (str_contains($os, 'darwin')) {
+            if ('arm64' === $machine) {
+                return 'swc-darwin-arm64';
+            }
+
+            if ('x86_64' === $machine) {
+                return 'swc-darwin-x64';
+            }
+
+            throw new \Exception(sprintf('No matching machine found for Darwin platform (Machine: %s).', $machine));
+        }
+
+        if (str_contains($os, 'linux')) {
+            $kernel = strtolower(php_uname('r'));
+            $kernelVersion = str_contains($kernel, 'musl') ? 'musl' : 'gnu';
+            if ('arm64' === $machine || 'aarch64' === $machine) {
+                return 'swc-linux-arm64-' . $kernelVersion;
+            }
+            if ('x86_64' === $machine) {
+                return 'swc-linux-x64-' . $kernelVersion;
+            }
+
+            throw new \Exception(sprintf('No matching machine found for Linux platform (Machine: %s).', $machine));
+        }
+
+        if (str_contains($os, 'win')) {
+            if ('x86_64' === $machine) {
+                return 'swc-win32-x64-msvc';
+            }
+            if ('amd64' === $machine) {
+                return 'swc-win32-arm64-msvc';
+            }
+            if ('i586' === $machine) {
+                return 'swc-win32-ia32-msvc';
+            }
+
+            throw new \Exception(sprintf('No matching machine found for Windows platform (Machine: %s).', $machine));
+        }
+
+        throw new \Exception(sprintf('Unknown platform or architecture (OS: %s, Machine: %s).', $os, $machine));
     }
 
     /**
@@ -43,99 +130,8 @@ class TypeScriptBinary
         return new Process($args);
     }
 
-    public function downloadBinary(): void
-    {
-        $targetPath = $this->getDefaultBinaryPath();
-        if (file_exists($targetPath)) {
-            return;
-        }
-
-        if (!is_dir($this->binaryDownloadDir)) {
-            mkdir($this->binaryDownloadDir, 0777, true);
-        }
-        if (null === $this->httpClient) {
-            throw new \LogicException('The HttpClientInterface is not available. Try running "composer require symfony/http-client".');
-        }
-
-        $url = sprintf(self::SWC_RELEASE_URL_PATTERN, self::VERSION, $this->getBinaryName());
-        $this->output?->note(sprintf('Downloading TypeScript binary to %s...', $targetPath));
-
-        $response = $this->httpClient->request('GET', $url, [
-            'on_progress' => function (int $dlNow, int $dlSize, array $info) use (&$progressBar): void {
-                if (0 === $dlSize) {
-                    return;
-                }
-
-                if (!$progressBar) {
-                    $progressBar = $this->output?->createProgressBar($dlSize);
-                }
-
-                $progressBar?->setProgress($dlNow);
-            },
-        ]);
-        $fileHandler = fopen($targetPath, 'w');
-        foreach ($this->httpClient->stream($response) as $chunk) {
-            fwrite($fileHandler, $chunk->getContent());
-        }
-
-        fclose($fileHandler);
-        chmod($targetPath, 7770);
-        $progressBar?->finish();
-        $this->output?->writeln('');
-    }
-
-    private function getBinaryName(): string
-    {
-        if (null !== $this->binaryName) {
-            return $this->binaryName;
-        }
-        $os = strtolower(\PHP_OS);
-        $machine = strtolower(php_uname('m'));
-
-        if (str_contains($os, 'darwin')) {
-            if ('arm64' === $machine) {
-                return $this->binaryName = 'swc-darwin-arm64';
-            }
-
-            if ('x86_64' === $machine) {
-                return $this->binaryName = 'swc-darwin-x64';
-            }
-
-            throw new \Exception(sprintf('No matching machine found for Darwin platform (Machine: %s).', $machine));
-        }
-
-        if (str_contains($os, 'linux')) {
-            $kernel = strtolower(php_uname('r'));
-            $kernelVersion = str_contains($kernel, 'musl') ? 'musl' : 'gnu';
-            if ('arm64' === $machine || 'aarch64' === $machine) {
-                return $this->binaryName = 'swc-linux-arm64-' . $kernelVersion;
-            }
-            if ('x86_64' === $machine) {
-                return $this->binaryName = 'swc-linux-x64-' . $kernelVersion;
-            }
-
-            throw new \Exception(sprintf('No matching machine found for Linux platform (Machine: %s).', $machine));
-        }
-
-        if (str_contains($os, 'win')) {
-            if ('x86_64' === $machine) {
-                return $this->binaryName = 'swc-win32-x64-msvc';
-            }
-            if ('amd64' === $machine) {
-                return $this->binaryName = 'swc-win32-arm64-msvc';
-            }
-            if ('i586' === $machine) {
-                return $this->binaryName = 'swc-win32-ia32-msvc';
-            }
-
-            throw new \Exception(sprintf('No matching machine found for Windows platform (Machine: %s).', $machine));
-        }
-
-        throw new \Exception(sprintf('Unknown platform or architecture (OS: %s, Machine: %s).', $os, $machine));
-    }
-
     private function getDefaultBinaryPath(): string
     {
-        return $this->binaryDownloadDir . '/' . $this->getBinaryName();
+        return $this->binaryDownloadDir.'/swc';
     }
 }
