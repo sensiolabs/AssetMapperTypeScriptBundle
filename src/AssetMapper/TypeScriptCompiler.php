@@ -33,15 +33,17 @@ class TypeScriptCompiler implements AssetCompilerInterface
             return false;
         }
         foreach ($this->typeScriptFilesPaths as $path) {
-            if (is_dir($path) && !str_starts_with($this->fileSystem->makePathRelative(realpath($asset->sourcePath), realpath($path)), '../')) {
+            // If the asset matches one of the TypeScript files source paths
+            if (realpath($asset->sourcePath) === realpath($path)) {
                 return true;
             }
-            if (realpath($asset->sourcePath) === realpath($path)) {
+            // If the asset is in a directory (or subdirectory) of one of the TypeScript directory source paths
+            if (is_dir($path) && !str_starts_with($this->fileSystem->makePathRelative(realpath($asset->sourcePath), realpath($path)), '../')) {
                 return true;
             }
         }
 
-        return false;
+        throw new \Exception(sprintf('The TypeScript file "%s" is not in the TypeScript files paths. Check the asset path or your "sensiolabs_typescript.source_dir" in your config', $asset->sourcePath));
     }
 
     public function compile(string $content, MappedAsset $asset, AssetMapperInterface $assetMapper): string
