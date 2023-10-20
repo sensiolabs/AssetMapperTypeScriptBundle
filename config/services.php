@@ -16,8 +16,7 @@ return static function (ContainerConfigurator $container) {
             abstract_arg('path to typescript files'),
             abstract_arg('path to compiled directory'),
             param('kernel.project_dir'),
-            abstract_arg('path to binary'),
-            abstract_arg('embed sourcemap'),
+            abstract_arg('path to the swc binary'),
         ])
         ->set('typescript.command.build', TypeScriptBuildCommand::class)
         ->args([
@@ -26,7 +25,8 @@ return static function (ContainerConfigurator $container) {
         ->tag('console.command')
         ->set('typescript.js_asset_compiler', TypeScriptCompiler::class)
         ->tag('asset_mapper.compiler', [
-            'priority' => 9
+            // A priority needs to be set to ensure that the TypeScript compiler is called before the JavaScript compiler
+            'priority' => 10
         ])
         ->args([
             abstract_arg('path to typescript source dir'),

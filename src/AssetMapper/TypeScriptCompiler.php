@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the SymfonyCasts SassBundle package.
- * Copyright (c) SymfonyCasts <https://symfonycasts.com/>
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace Sensiolabs\TypeScriptBundle\AssetMapper;
 
 use Symfony\Component\AssetMapper\AssetMapperInterface;
@@ -49,7 +42,7 @@ class TypeScriptCompiler implements AssetCompilerInterface
     public function compile(string $content, MappedAsset $asset, AssetMapperInterface $assetMapper): string
     {
         foreach ($this->typeScriptFilesPaths as $typeScriptFilesPath) {
-            if (str_starts_with($asset->sourcePath, $typeScriptFilesPath)) {
+            if (str_starts_with(realpath($asset->sourcePath), realpath($typeScriptFilesPath))) {
                 $fileName = basename($asset->sourcePath, '.ts');
                 $subPath = trim($this->fileSystem->makePathRelative(dirname($asset->sourcePath), $this->projectRootDir), '/');
                 $jsFile = $this->jsPathDirectory . '/' . $subPath . '/' . $fileName . '.js';

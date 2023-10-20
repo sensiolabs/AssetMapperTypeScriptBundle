@@ -13,9 +13,7 @@ class TypeScriptBuilder
         private readonly array $typeScriptFilesPaths,
         private readonly string $compiledFilesPaths,
         private readonly string $projectRootDir,
-        private readonly ?string $binaryPath,
-        private readonly bool $embedSourcemap,
-    )
+        private readonly ?string $binaryPath)
     {
     }
 
@@ -25,9 +23,6 @@ class TypeScriptBuilder
 
         $args = ['--out-dir', $this->compiledFilesPaths];
 
-        if ($this->embedSourcemap) {
-            $args = array_merge($args, ['--source-maps', 'true']);
-        }
         $fs = new Filesystem();
         foreach ($this->typeScriptFilesPaths as $typeScriptFilePath) {
             $relativePath = $fs->makePathRelative($typeScriptFilePath, $this->projectRootDir);
