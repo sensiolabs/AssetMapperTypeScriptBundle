@@ -7,16 +7,16 @@
  * file that was distributed with this source code.
  */
 
-namespace Sensiolabs\TypescriptBundle\Tests\fixtures;
+namespace Sensiolabs\TypeScriptBundle\Tests\fixtures;
 
-use Sensiolabs\TypescriptBundle\SensiolabsTypescriptBundle;
+use Sensiolabs\TypeScriptBundle\SensiolabsTypeScriptBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
 
-class TypescriptTestKernel extends Kernel
+class TypeScriptTestKernel extends Kernel
 {
     use MicroKernelTrait;
 
@@ -29,7 +29,7 @@ class TypescriptTestKernel extends Kernel
     {
         return [
             new FrameworkBundle(),
-            new SensiolabsTypescriptBundle(),
+            new SensiolabsTypeScriptBundle(),
         ];
     }
 

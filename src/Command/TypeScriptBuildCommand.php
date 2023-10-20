@@ -1,9 +1,9 @@
 <?php
 
-namespace Sensiolabs\TypescriptBundle\Command;
+namespace Sensiolabs\TypeScriptBundle\Command;
 
-use Sensiolabs\TypescriptBundle\TypeScriptBinary;
-use Sensiolabs\TypescriptBundle\TypeScriptBuilder;
+use Sensiolabs\TypeScriptBundle\TypeScriptBinary;
+use Sensiolabs\TypeScriptBundle\TypeScriptBuilder;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;

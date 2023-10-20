@@ -1,6 +1,6 @@
 {
     "name": "sensiolabs/typescript-bundle",
-    "description": "Typescript support for Symfony + AssetMapper",
+    "description": "TypeScript support for Symfony + AssetMapper",
     "license": "MIT",
     "type": "library",
     "keywords": ["asset-mapper", "typescript"],
@@ -26,12 +26,12 @@
     "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
-            "Sensiolabs\\TypescriptBundle\\": "src/"
+            "Sensiolabs\\TypeScriptBundle\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Sensiolabs\\TypescriptBundle\\Tests\\": "tests/"
+            "Sensiolabs\\TypeScriptBundle\\Tests\\": "tests/"
         }
     }
 }

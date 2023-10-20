@@ -1,9 +1,9 @@
 <?php
 //
-use Sensiolabs\TypescriptBundle\AssetMapper\TypeScriptCompiler;
-use Sensiolabs\TypescriptBundle\AssetMapper\TypeScriptPublicPathAssetPathResolver;
-use Sensiolabs\TypescriptBundle\Command\TypeScriptBuildCommand;
-use Sensiolabs\TypescriptBundle\TypeScriptBuilder;
+use Sensiolabs\TypeScriptBundle\AssetMapper\TypeScriptCompiler;
+use Sensiolabs\TypeScriptBundle\AssetMapper\TypeScriptPublicPathAssetPathResolver;
+use Sensiolabs\TypeScriptBundle\Command\TypeScriptBuildCommand;
+use Sensiolabs\TypeScriptBundle\TypeScriptBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\abstract_arg;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;

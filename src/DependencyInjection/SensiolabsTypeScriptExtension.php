@@ -1,6 +1,6 @@
 <?php
 
-namespace Sensiolabs\TypescriptBundle\DependencyInjection;
+namespace Sensiolabs\TypeScriptBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
@@ -10,9 +10,14 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 
-class SensiolabsTypescriptExtension extends Extension implements ConfigurationInterface
+class SensiolabsTypeScriptExtension extends Extension implements ConfigurationInterface
 {
     private bool $isDebug;
+
+    public function getAlias(): string
+    {
+        return 'sensiolabs_typescript';
+    }
 
     public function load(array $configs, ContainerBuilder $container): void
     {

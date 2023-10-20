@@ -1,10 +1,10 @@
 TypeScript Bundle For Symfony!
 =================
 
-This bundle allows you to compile Typescript and use it with Symfony's AssetMapper Component
+This bundle allows you to compile TypeScript and use it with Symfony's AssetMapper Component
 (no Node required!).
 
-- Automatically downloads the correct Typescript compiler binary
+- Automatically downloads the correct TypeScript compiler binary
 - Adds a ``typescript:build`` command to compile your typescript files
 
 ## Documentation

@@ -1,9 +1,9 @@
 <?php
 
-namespace Sensiolabs\TypescriptBundle\Tests;
+namespace Sensiolabs\TypeScriptBundle\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Sensiolabs\TypescriptBundle\AssetMapper\TypeScriptCompiler;
+use Sensiolabs\TypeScriptBundle\AssetMapper\TypeScriptCompiler;
 use Symfony\Component\AssetMapper\AssetMapperInterface;
 use Symfony\Component\AssetMapper\MappedAsset;
 use Symfony\Component\Filesystem\Filesystem;

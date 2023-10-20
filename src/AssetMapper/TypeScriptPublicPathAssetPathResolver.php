@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Sensiolabs\TypescriptBundle\AssetMapper;
+namespace Sensiolabs\TypeScriptBundle\AssetMapper;
 
 use Symfony\Component\AssetMapper\Path\PublicAssetsPathResolverInterface;
 

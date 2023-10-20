@@ -1,6 +1,6 @@
 <?php
 
-namespace Sensiolabs\TypescriptBundle;
+namespace Sensiolabs\TypeScriptBundle;
 
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;

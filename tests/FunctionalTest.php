@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Sensiolabs\TypescriptBundle\Tests;
+namespace Sensiolabs\TypeScriptBundle\Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\AssetMapper\AssetMapperInterface;
