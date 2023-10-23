@@ -10,9 +10,9 @@ class TypeScriptBuilder
     private ?SymfonyStyle $output = null;
 
     public function __construct(
-        private readonly array $typeScriptFilesPaths,
-        private readonly string $compiledFilesPaths,
-        private readonly string $projectRootDir,
+        private readonly array   $typeScriptFilesPaths,
+        private readonly string  $compiledFilesPaths,
+        private readonly string  $projectRootDir,
         private readonly ?string $binaryPath)
     {
     }
