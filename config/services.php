@@ -3,7 +3,7 @@
 use Sensiolabs\TypeScriptBundle\AssetMapper\TypeScriptCompiler;
 use Sensiolabs\TypeScriptBundle\AssetMapper\TypeScriptPublicPathAssetPathResolver;
 use Sensiolabs\TypeScriptBundle\Command\TypeScriptBuildCommand;
-use Sensiolabs\TypeScriptBundle\EventListener\PreAssetCompileListener;
+use Sensiolabs\TypeScriptBundle\EventListener\PreAssetsCompileListener;
 use Sensiolabs\TypeScriptBundle\TypeScriptBuilder;
 use Symfony\Component\AssetMapper\Event\PreAssetsCompileEvent;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -40,7 +40,7 @@ return static function (ContainerConfigurator $container) {
             ->args([
                 service('.inner')
             ])
-        ->set('typescript.pre_asset_compile_listener', PreAssetCompileListener::class)
+        ->set('typescript.pre_assets_compile_listener', PreAssetsCompileListener::class)
             ->args([service('typescript.builder')])
             ->tag('kernel.event_listener', [
                 'event' => PreAssetsCompileEvent::class,

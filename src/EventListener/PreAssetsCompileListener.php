@@ -7,7 +7,7 @@ use Symfony\Component\AssetMapper\Event\PreAssetsCompileEvent;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class PreAssetCompileListener
+class PreAssetsCompileListener
 {
     public function __construct(private readonly TypeScriptBuilder $typeScriptBuilder)
     {
