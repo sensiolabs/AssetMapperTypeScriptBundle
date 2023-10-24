@@ -19,6 +19,7 @@ return static function (ContainerConfigurator $container) {
                 abstract_arg('path to compiled directory'),
                 param('kernel.project_dir'),
                 abstract_arg('path to the swc binary'),
+                abstract_arg('swc configuration file'),
             ])
         ->set('typescript.command.build', TypeScriptBuildCommand::class)
             ->args([

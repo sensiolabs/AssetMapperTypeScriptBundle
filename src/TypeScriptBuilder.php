@@ -13,17 +13,22 @@ class TypeScriptBuilder
         private readonly array $typeScriptFilesPaths,
         private readonly string $compiledFilesPaths,
         private readonly string $projectRootDir,
-        private readonly ?string $binaryPath)
-    {
+        private readonly ?string $binaryPath,
+        private readonly ?string $configFile,
+    ) {
     }
 
     public function runBuild(): \Generator
     {
         $binary = $this->createBinary();
+        $fs = new Filesystem();
 
         $args = ['--out-dir', $this->compiledFilesPaths];
 
-        $fs = new Filesystem();
+        if ($this->configFile && file_exists($this->configFile)) {
+            $args = array_merge($args, ['--config-file', trim($fs->makePathRelative($this->configFile, $this->projectRootDir), '/')]);
+        }
+
         foreach ($this->typeScriptFilesPaths as $typeScriptFilePath) {
             $relativePath = $fs->makePathRelative($typeScriptFilePath, $this->projectRootDir);
             if (str_starts_with($relativePath, '..')) {

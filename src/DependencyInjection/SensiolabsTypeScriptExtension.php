@@ -28,12 +28,15 @@ class SensiolabsTypeScriptExtension extends Extension implements ConfigurationIn
         $container->findDefinition('typescript.builder')
             ->replaceArgument(0, $config['source_dir'])
             ->replaceArgument(1, '%kernel.project_dir%/var/typescript')
-            ->replaceArgument(3, $config['binary']);
+            ->replaceArgument(3, $config['binary'])
+            ->replaceArgument(4, $config['config_file'])
+        ;
 
         $container->findDefinition('typescript.js_asset_compiler')
             ->replaceArgument(0, $config['source_dir'])
             ->replaceArgument(1, '%kernel.project_dir%/var/typescript')
-            ->replaceArgument(2, '%kernel.project_dir%');
+            ->replaceArgument(2, '%kernel.project_dir%')
+        ;
     }
 
     public function getConfiguration(array $config, ContainerBuilder $container): ?ConfigurationInterface
@@ -57,9 +60,14 @@ class SensiolabsTypeScriptExtension extends Extension implements ConfigurationIn
                         ->end()
                     ->defaultValue(['%kernel.project_dir%/assets'])
                 ->end()
-                    ->scalarNode('binary')
+                ->scalarNode('binary')
                     ->info('The SWC binary to use')
                     ->defaultNull()
+                ->end()
+                ->scalarNode('config_file')
+                    ->info('Path to .swcrc configuration file to use')
+                    ->defaultValue('%kernel.project_dir%/.swcrc')
+                ->end()
             ->end();
 
         return $treeBuilder;
