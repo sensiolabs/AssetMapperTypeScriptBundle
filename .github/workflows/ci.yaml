@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  pull_request: ~
+  push:
+    branches:
+      - main
+  release:
+    types:
+      - created
+  schedule:
+    - cron: '0 */12 * * *'
+
+jobs:
+  test:
+    name: "Build and Test - Linux"
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: [ 8.1, 8.2 ]
+        deps: [ high ]
+        include:
+          - php: 8.1
+            deps: low
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          coverage: none
+          php-version: ${{ matrix.php }}
+
+      - name: Install dependencies
+        if: matrix.deps == 'high'
+        run: composer install
+
+      - name: Install dependencies (min)
+        if: matrix.deps == 'low'
+        run: composer update --prefer-lowest --prefer-stable
+
+      - name: Run tests
+        run: |
+          ./vendor/bin/simple-phpunit
+
+  php-cs-fixer:
+    name: PHP CS Fixer
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: php-cs-fixer
+
+      - name: Run PHP-CS-Fixer
+        run:
+          php-cs-fixer fix --dry-run --diff
