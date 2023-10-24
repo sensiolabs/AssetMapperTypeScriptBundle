@@ -2,7 +2,6 @@
 
 namespace Sensiolabs\TypeScriptBundle\Command;
 
-use Sensiolabs\TypeScriptBundle\TypeScriptBinary;
 use Sensiolabs\TypeScriptBundle\TypeScriptBuilder;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -34,9 +33,11 @@ class TypeScriptBuildCommand extends Command
 
             if (!$process->isSuccessful()) {
                 $io->error('TypeScript build failed');
+
                 return self::FAILURE;
             }
         }
+
         return self::SUCCESS;
     }
 }
