@@ -3,7 +3,6 @@
 namespace Sensiolabs\TypeScriptBundle;
 
 use Sensiolabs\TypeScriptBundle\DependencyInjection\SensiolabsTypeScriptExtension;
-use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\Extension\ExtensionInterface;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 

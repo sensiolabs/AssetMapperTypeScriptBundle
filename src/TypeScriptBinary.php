@@ -13,13 +13,12 @@ class TypeScriptBinary
     private const SWC_RELEASE_URL_PATTERN = 'https://github.com/swc-project/swc/releases/download/%s/%s';
 
     public function __construct(
-        private readonly string      $binaryDownloadDir,
-        private readonly ?string     $binaryPath,
-        private ?SymfonyStyle        $output = null,
+        private readonly string $binaryDownloadDir,
+        private readonly ?string $binaryPath,
+        private ?SymfonyStyle $output = null,
         private ?HttpClientInterface $httpClient = null,
         private ?string $binaryName = null,
-    )
-    {
+    ) {
         $this->httpClient = $httpClient ?? HttpClient::create();
     }
 
@@ -104,10 +103,10 @@ class TypeScriptBinary
             $kernel = strtolower(php_uname('r'));
             $kernelVersion = str_contains($kernel, 'musl') ? 'musl' : 'gnu';
             if ('arm64' === $machine || 'aarch64' === $machine) {
-                return $this->binaryName = 'swc-linux-arm64-' . $kernelVersion;
+                return $this->binaryName = 'swc-linux-arm64-'.$kernelVersion;
             }
             if ('x86_64' === $machine) {
-                return $this->binaryName = 'swc-linux-x64-' . $kernelVersion;
+                return $this->binaryName = 'swc-linux-x64-'.$kernelVersion;
             }
 
             throw new \Exception(sprintf('No matching machine found for Linux platform (Machine: %s).', $machine));
@@ -132,6 +131,6 @@ class TypeScriptBinary
 
     private function getDefaultBinaryPath(): string
     {
-        return $this->binaryDownloadDir . '/' . $this->getBinaryName();
+        return $this->binaryDownloadDir.'/'.$this->getBinaryName();
     }
 }

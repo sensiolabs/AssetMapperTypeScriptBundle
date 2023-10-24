@@ -15,8 +15,7 @@ class TypeScriptCompiler implements AssetCompilerInterface
         private readonly array $typeScriptFilesPaths,
         private readonly string $jsPathDirectory,
         private readonly string $projectRootDir,
-    )
-    {
+    ) {
         $this->fileSystem = new Filesystem();
     }
 
@@ -44,8 +43,8 @@ class TypeScriptCompiler implements AssetCompilerInterface
         foreach ($this->typeScriptFilesPaths as $typeScriptFilesPath) {
             if (str_starts_with(realpath($asset->sourcePath), realpath($typeScriptFilesPath))) {
                 $fileName = basename($asset->sourcePath, '.ts');
-                $subPath = trim($this->fileSystem->makePathRelative(dirname($asset->sourcePath), $this->projectRootDir), '/');
-                $jsFile = $this->jsPathDirectory . '/' . $subPath . '/' . $fileName . '.js';
+                $subPath = trim($this->fileSystem->makePathRelative(\dirname($asset->sourcePath), $this->projectRootDir), '/');
+                $jsFile = $this->jsPathDirectory.'/'.$subPath.'/'.$fileName.'.js';
                 break;
             }
         }
@@ -53,7 +52,7 @@ class TypeScriptCompiler implements AssetCompilerInterface
         $asset->addFileDependency($jsFile);
 
         if (($content = file_get_contents($jsFile)) === false) {
-            throw new \RuntimeException('The file ' . $jsFile . ' doesn\'t exist, run php bin/console typescript:build');
+            throw new \RuntimeException('The file '.$jsFile.' doesn\'t exist, run php bin/console typescript:build');
         }
 
         return $content;
