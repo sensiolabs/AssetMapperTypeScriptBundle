@@ -99,3 +99,13 @@ This bundle already installed for you the right SWC binary. However, if you alre
 
     sensiolabs_typescript:
         binary: 'node_modules/.bin/swc'
+
+Configuring the compiler
+--------------------------
+
+You can configure the SWC compiler by setting the ``config_file`` option to the the path to your [.swcrc](https://swc.rs/docs/configuration/swcrc) file:
+
+.. code-block:: yaml
+
+    sensiolabs_typescript:
+        config_file: '%kernel.project_dir%/.swcrc'
