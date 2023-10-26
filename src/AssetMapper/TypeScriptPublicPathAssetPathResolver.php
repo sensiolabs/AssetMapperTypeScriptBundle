@@ -25,8 +25,8 @@ class TypeScriptPublicPathAssetPathResolver implements PublicAssetsPathResolverI
     {
         $path = $this->decorator->getPublicFilesystemPath();
 
-        if (str_contains($path, '.ts')) {
-            return str_replace('.ts', '.js', $path);
+        if (str_ends_with($path, '.ts')) {
+            return substr($path, 0, -3).'.js';
         }
 
         return $path;
