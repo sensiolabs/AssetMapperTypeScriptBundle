@@ -18,20 +18,21 @@ class FunctionalTest extends KernelTestCase
 {
     protected function setUp(): void
     {
-        file_put_contents(__DIR__.'/fixtures/assets/typescript/main.js', <<<EOF
-            console.log('Hello world');
+        $filesystem = new Filesystem();
+        $filesystem->mkdir(__DIR__.'/fixtures/var');
+        $filesystem->dumpFile(__DIR__.'/fixtures/var/typescript/assets/typescript/main.js', <<<EOF
+            var greeting = "Hello, World!";
+            console.log(greeting);
             EOF
         );
-
-        if (file_exists(__DIR__.'/fixtures/var')) {
-            $filesystem = new Filesystem();
-            $filesystem->remove(__DIR__.'/fixtures/var');
-        }
     }
 
     protected function tearDown(): void
     {
-        unlink(__DIR__.'/fixtures/assets/typescript/main.js');
+        $filesystem = new Filesystem();
+        if (file_exists(__DIR__.'/fixtures/var')) {
+            $filesystem->remove(__DIR__.'/fixtures/var');
+        }
     }
 
     public function testBuildJsIfUsed(): void
@@ -41,8 +42,11 @@ class FunctionalTest extends KernelTestCase
         $assetMapper = self::getContainer()->get('asset_mapper');
         \assert($assetMapper instanceof AssetMapperInterface);
 
-        $asset = $assetMapper->getAsset('typescript/main.js');
+        $asset = $assetMapper->getAsset('typescript/main.ts');
         $this->assertInstanceOf(MappedAsset::class, $asset);
-        $this->assertStringContainsString('console.log(\'Hello world\');', $asset->content);
+        $this->assertStringContainsString(<<<EOF
+            var greeting = "Hello, World!";
+            console.log(greeting);
+            EOF, $asset->content);
     }
 }
