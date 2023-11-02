@@ -18,7 +18,7 @@ class PreAssetsCompileListener
         $output = new SymfonyStyle(new ArrayInput([]), $event->getOutput());
         $this->typeScriptBuilder
             ->setOutput($output);
-        foreach ($this->typeScriptBuilder->runBuild() as $process) {
+        foreach ($this->typeScriptBuilder->createAllBuildProcess() as $process) {
             $process->wait(function ($type, $buffer) use ($output) {
                 $output->write($buffer);
             });
