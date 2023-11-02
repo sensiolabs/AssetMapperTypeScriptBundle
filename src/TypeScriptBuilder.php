@@ -17,8 +17,7 @@ class TypeScriptBuilder
         private readonly string $compiledFilesPaths,
         private readonly string $projectRootDir,
         private readonly ?string $binaryPath,
-    )
-    {
+    ) {
     }
 
     public function createAllBuildProcess(bool $watch = false): \Generator
@@ -65,7 +64,7 @@ class TypeScriptBuilder
         }
         $watchProcess->start(function ($type, $buffer) {
             $path = trim($buffer);
-            if ($path === '/') {
+            if ('/' === $path) {
                 return;
             }
             $newProcess = $this->createBuildProcess($path);
@@ -76,6 +75,7 @@ class TypeScriptBuilder
 
         return $watchProcess;
     }
+
     public function setOutput(SymfonyStyle $output): void
     {
         $this->output = $output;

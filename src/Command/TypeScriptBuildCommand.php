@@ -18,8 +18,7 @@ class TypeScriptBuildCommand extends Command
 {
     public function __construct(
         private TypeScriptBuilder $typeScriptBuilder
-    )
-    {
+    ) {
         parent::__construct();
     }
 
@@ -39,7 +38,7 @@ class TypeScriptBuildCommand extends Command
             $processes[] = $process;
         }
 
-        if (count($processes) === 0) {
+        if (0 === \count($processes)) {
             $io->success('No TypeScript files to compile');
 
             return self::SUCCESS;
@@ -58,7 +57,8 @@ class TypeScriptBuildCommand extends Command
                 unset($processes[$index]);
             }
             usleep($watch ? 1000000 : 5000);
-        } while (count($processes) > 0);
+        } while (\count($processes) > 0);
+
         return self::SUCCESS;
     }
 }

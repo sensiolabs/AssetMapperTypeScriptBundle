@@ -3,7 +3,6 @@
 namespace Sensiolabs\TypeScriptBundle;
 
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\Process\Process;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -23,9 +22,6 @@ class WatchexecBinary
         $this->httpClient = $httpClient ?? HttpClient::create();
     }
 
-    /**
-     * @param array<string> $args
-     */
     public function createWatchProcess(string $watchPath): Process
     {
         $args = ['--exts', 'ts', '-w', $watchPath, 'echo "$WATCHEXEC_COMMON_PATH/$WATCHEXEC_WRITTEN_PATH"'];
@@ -99,7 +95,7 @@ class WatchexecBinary
         if (str_contains($os, 'darwin')) {
             if ('aarch64' === $machine) {
                 $platform = 'aarch64-apple-darwin.tar.xz';
-            } elseif ('x86_64' === $machine){
+            } elseif ('x86_64' === $machine) {
                 $platform = 'x86_64-apple-darwin.tar.xz';
             }
         }
@@ -130,6 +126,7 @@ class WatchexecBinary
     {
         $archiveName = $this->getBinaryArchiveName();
         $extension = str_ends_with($archiveName, '.tar.xz') ? '.tar.xz' : '.zip';
+
         return $this->binaryDownloadDir.'/'.basename($archiveName, $extension).'/watchexec';
     }
 }
