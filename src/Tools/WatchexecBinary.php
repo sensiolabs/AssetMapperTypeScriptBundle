@@ -9,7 +9,7 @@ class WatchexecBinary
     public function __construct(
         private readonly string $executablePath,
     ) {
-        if(!file_exists($this->executablePath)) {
+        if (!file_exists($this->executablePath)) {
             throw new \Exception(sprintf('The Watchexec binary could not be found at the provided path : "%s"', $this->executablePath));
         }
     }

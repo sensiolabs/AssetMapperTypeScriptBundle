@@ -5,7 +5,6 @@ namespace Sensiolabs\TypeScriptBundle\Tools;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\HttpClient\HttpClient;
-use Symfony\Component\Process\Process;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class TypescriptBinaryFactory
@@ -21,10 +20,12 @@ class TypescriptBinaryFactory
         $this->httpClient = $httpClient ?? HttpClient::create();
     }
 
-    public function getBinaryFromPath($pathToExecutable): TypeScriptBinary {
+    public function getBinaryFromPath($pathToExecutable): TypeScriptBinary
+    {
         return new TypeScriptBinary($pathToExecutable);
     }
-    public function getBinaryFromServerSpecs($os, $machine, $kernel,): TypeScriptBinary
+
+    public function getBinaryFromServerSpecs($os, $machine, $kernel): TypeScriptBinary
     {
         $binaryName = self::getBinaryNameFromServerSpecs($os, $machine, $kernel);
         if (!file_exists($this->binaryDownloadDir.'/'.$binaryName)) {
@@ -109,7 +110,7 @@ class TypescriptBinaryFactory
         if ($this->output?->isVerbose()) {
             $this->output?->note(sprintf('Downloading SWC binary from "%s" to "%s"...', $url, $targetPath));
         } else {
-            $this->output?->note(sprintf('Downloading SWC binary ...'));
+            $this->output?->note('Downloading SWC binary ...');
         }
 
         $response = $this->httpClient->request('GET', $url, [

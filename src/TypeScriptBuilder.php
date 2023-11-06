@@ -15,11 +15,12 @@ class TypeScriptBuilder
     private ?SymfonyStyle $output = null;
     private ?TypeScriptBinary $buildBinary = null;
     private ?WatchexecBinary $watchexecBinary = null;
+
     public function __construct(
-        private readonly array   $typeScriptFilesPaths,
-        private readonly string  $compiledFilesPaths,
-        private readonly string  $projectRootDir,
-        private readonly string  $binaryDownloadDir,
+        private readonly array $typeScriptFilesPaths,
+        private readonly string $compiledFilesPaths,
+        private readonly string $projectRootDir,
+        private readonly string $binaryDownloadDir,
         private readonly ?string $buildBinaryPath,
         private readonly ?string $watchexecBinaryPath,
     ) {
@@ -97,7 +98,7 @@ class TypeScriptBuilder
 
         return $this->buildBinary = $this->buildBinaryPath ?
             $typescriptBinaryFactory->getBinaryFromPath($this->buildBinaryPath) :
-            $typescriptBinaryFactory->getBinaryFromServerSpecs(PHP_OS, php_uname('m'), php_uname('r'));
+            $typescriptBinaryFactory->getBinaryFromServerSpecs(\PHP_OS, php_uname('m'), php_uname('r'));
     }
 
     private function getWatchexecBinary(): WatchexecBinary
@@ -110,6 +111,6 @@ class TypeScriptBuilder
 
         return $this->watchexecBinary = $this->watchexecBinaryPath ?
             $watchexecBinaryFactory->getBinaryFromPath($this->watchexecBinaryPath) :
-            $watchexecBinaryFactory->getBinaryFromServerSpecs(PHP_OS, php_uname('m'), php_uname('r'));
+            $watchexecBinaryFactory->getBinaryFromServerSpecs(\PHP_OS, php_uname('m'), php_uname('r'));
     }
 }

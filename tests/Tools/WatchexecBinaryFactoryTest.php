@@ -16,6 +16,7 @@ class WatchexecBinaryFactoryTest extends TestCase
             $this->binaryDownloadDir,
         );
     }
+
     public function testGetBinaryFromPath()
     {
         // Test that the binary is found and the process is created with the correct arguments

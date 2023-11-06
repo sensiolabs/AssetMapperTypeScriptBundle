@@ -21,10 +21,12 @@ class WatchexecBinaryFactory
         $this->httpClient = $httpClient ?? HttpClient::create();
     }
 
-    public function getBinaryFromPath($pathToExecutable): WatchexecBinary {
+    public function getBinaryFromPath($pathToExecutable): WatchexecBinary
+    {
         return new WatchexecBinary($pathToExecutable);
     }
-    public function getBinaryFromServerSpecs($os, $machine, $kernel,): WatchexecBinary
+
+    public function getBinaryFromServerSpecs($os, $machine, $kernel): WatchexecBinary
     {
         $binaryName = self::getBinaryNameFromServerSpecs($os, $machine, $kernel);
         if (!file_exists($this->binaryDownloadDir.'/'.$binaryName)) {
@@ -100,7 +102,7 @@ class WatchexecBinaryFactory
         if ($this->output?->isVerbose()) {
             $this->output?->note(sprintf('Downloading Watchexec binary from "%s" to "%s"...', $url, $targetPath));
         } else {
-            $this->output?->note(sprintf('Downloading Watchexec binary ...'));
+            $this->output?->note('Downloading Watchexec binary ...');
         }
 
         $response = $this->httpClient->request('GET', $url, [
