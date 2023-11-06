@@ -15,7 +15,7 @@ class TypeScriptBinary
     }
 
     /**
-     * @param array<string> $args
+     * @param non-empty-list<string> $args
      */
     public function createProcess(array $args): Process
     {
