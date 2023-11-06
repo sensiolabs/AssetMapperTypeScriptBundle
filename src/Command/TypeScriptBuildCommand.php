@@ -56,7 +56,7 @@ class TypeScriptBuildCommand extends Command
                 }
                 unset($processes[$index]);
             }
-            usleep($watch ? 1000000 : 5000);
+            usleep(100000);
         } while (\count($processes) > 0);
 
         return self::SUCCESS;

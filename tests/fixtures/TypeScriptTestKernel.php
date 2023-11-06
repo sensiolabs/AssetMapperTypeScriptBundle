@@ -52,7 +52,6 @@ class TypeScriptTestKernel extends Kernel
 
         $container->loadFromExtension('sensiolabs_typescript', [
             'source_dir' => [__DIR__.'/assets'],
-            'binary' => null,
         ]);
     }
 

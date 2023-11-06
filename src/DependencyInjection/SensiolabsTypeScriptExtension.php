@@ -28,7 +28,9 @@ class SensiolabsTypeScriptExtension extends Extension implements ConfigurationIn
         $container->findDefinition('sensiolabs_typescript.builder')
             ->replaceArgument(0, $config['source_dir'])
             ->replaceArgument(1, '%kernel.project_dir%/var/typescript')
-            ->replaceArgument(3, $config['binary']);
+            ->replaceArgument(3, $config['binary_download_dir'])
+            ->replaceArgument(4, $config['swc_binary'])
+            ->replaceArgument(5, $config['watchexec_binary']);
 
         $container->findDefinition('sensiolabs_typescript.js_asset_compiler')
             ->replaceArgument(0, $config['source_dir'])
@@ -57,10 +59,19 @@ class SensiolabsTypeScriptExtension extends Extension implements ConfigurationIn
                         ->end()
                     ->defaultValue(['%kernel.project_dir%/assets'])
                 ->end()
-                    ->scalarNode('binary')
+                ->scalarNode('binary_download_dir')
+                    ->info('The directory where the SWC and Watchexec binaries will be downloaded')
+                    ->defaultValue('%kernel.project_dir%/var')
+                ->end()
+                ->scalarNode('swc_binary')
                     ->info('The SWC binary to use')
                     ->defaultNull()
-            ->end();
+                ->end()
+                ->scalarNode('watchexec_binary')
+                    ->info('The Watchexec binary to use')
+                    ->defaultNull()
+                ->end()
+        ;
 
         return $treeBuilder;
     }

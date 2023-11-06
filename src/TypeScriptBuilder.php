@@ -2,6 +2,10 @@
 
 namespace Sensiolabs\TypeScriptBundle;
 
+use Sensiolabs\TypeScriptBundle\Tools\TypeScriptBinary;
+use Sensiolabs\TypeScriptBundle\Tools\TypescriptBinaryFactory;
+use Sensiolabs\TypeScriptBundle\Tools\WatchexecBinary;
+use Sensiolabs\TypeScriptBundle\Tools\WatchexecBinaryFactory;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
@@ -11,12 +15,13 @@ class TypeScriptBuilder
     private ?SymfonyStyle $output = null;
     private ?TypeScriptBinary $buildBinary = null;
     private ?WatchexecBinary $watchexecBinary = null;
-
     public function __construct(
-        private readonly array $typeScriptFilesPaths,
-        private readonly string $compiledFilesPaths,
-        private readonly string $projectRootDir,
-        private readonly ?string $binaryPath,
+        private readonly array   $typeScriptFilesPaths,
+        private readonly string  $compiledFilesPaths,
+        private readonly string  $projectRootDir,
+        private readonly string  $binaryDownloadDir,
+        private readonly ?string $buildBinaryPath,
+        private readonly ?string $watchexecBinaryPath,
     ) {
     }
 
@@ -29,14 +34,13 @@ class TypeScriptBuilder
 
     private function createBuildProcess(string $path, bool $watch = false): Process
     {
-        $this->buildBinary = $this->buildBinary ?: $this->createBinary();
         $args = ['--out-dir', $this->compiledFilesPaths];
         $fs = new Filesystem();
         $relativePath = rtrim($fs->makePathRelative($path, $this->projectRootDir), '/');
         if (str_starts_with($relativePath, '..')) {
             throw new \Exception(sprintf('The TypeScript file "%s" is not in the project directory "%s".', $path, $this->projectRootDir));
         }
-        $buildProcess = $this->buildBinary->createProcess(array_merge(['compile', $relativePath], $args));
+        $buildProcess = $this->getBuildBinary()->createProcess(array_merge(['compile', $relativePath], $args));
         $buildProcess->setWorkingDirectory($this->projectRootDir);
 
         $this->output?->note(sprintf('Executing SWC compile on %s.', $relativePath));
@@ -52,8 +56,7 @@ class TypeScriptBuilder
             return $buildProcess;
         }
 
-        $this->watchexecBinary = $this->watchexecBinary ?: $this->createWatchexecBinary();
-        $watchProcess = $this->watchexecBinary->createWatchProcess($relativePath);
+        $watchProcess = $this->getWatchexecBinary()->createProcess($relativePath);
         $watchProcess->setTimeout(null)->setIdleTimeout(null);
         $this->output?->note(sprintf('Watching for changes in %s...', $relativePath));
         if ($this->output?->isVerbose()) {
@@ -63,6 +66,9 @@ class TypeScriptBuilder
             ]);
         }
         $watchProcess->start(function ($type, $buffer) {
+            if ('err' === $type) {
+                throw new \RuntimeException($buffer);
+            }
             $path = trim($buffer);
             if ('/' === $path) {
                 return;
@@ -81,13 +87,29 @@ class TypeScriptBuilder
         $this->output = $output;
     }
 
-    private function createBinary(): TypeScriptBinary
+    private function getBuildBinary(): TypeScriptBinary
     {
-        return new TypeScriptBinary($this->projectRootDir.'/var', $this->binaryPath, $this->output);
+        if ($this->buildBinary) {
+            return $this->buildBinary;
+        }
+        $typescriptBinaryFactory = new TypescriptBinaryFactory($this->binaryDownloadDir);
+        $typescriptBinaryFactory->setOutput($this->output);
+
+        return $this->buildBinary = $this->buildBinaryPath ?
+            $typescriptBinaryFactory->getBinaryFromPath($this->buildBinaryPath) :
+            $typescriptBinaryFactory->getBinaryFromServerSpecs(PHP_OS, php_uname('m'), php_uname('r'));
     }
 
-    public function createWatchexecBinary()
+    private function getWatchexecBinary(): WatchexecBinary
     {
-        return new WatchexecBinary($this->projectRootDir.'/var', $this->binaryPath, $this->output);
+        if ($this->watchexecBinary) {
+            return $this->watchexecBinary;
+        }
+        $watchexecBinaryFactory = new WatchexecBinaryFactory($this->binaryDownloadDir);
+        $watchexecBinaryFactory->setOutput($this->output);
+
+        return $this->watchexecBinary = $this->watchexecBinaryPath ?
+            $watchexecBinaryFactory->getBinaryFromPath($this->watchexecBinaryPath) :
+            $watchexecBinaryFactory->getBinaryFromServerSpecs(PHP_OS, php_uname('m'), php_uname('r'));
     }
 }
