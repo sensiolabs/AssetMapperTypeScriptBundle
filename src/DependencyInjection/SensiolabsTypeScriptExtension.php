@@ -25,12 +25,12 @@ class SensiolabsTypeScriptExtension extends Extension implements ConfigurationIn
         $configuration = $this->getConfiguration($configs, $container);
         $config = $this->processConfiguration($configuration, $configs);
 
-        $container->findDefinition('typescript.builder')
+        $container->findDefinition('sensiolabs_typescript.builder')
             ->replaceArgument(0, $config['source_dir'])
             ->replaceArgument(1, '%kernel.project_dir%/var/typescript')
             ->replaceArgument(3, $config['binary']);
 
-        $container->findDefinition('typescript.js_asset_compiler')
+        $container->findDefinition('sensiolabs_typescript.js_asset_compiler')
             ->replaceArgument(0, $config['source_dir'])
             ->replaceArgument(1, '%kernel.project_dir%/var/typescript')
             ->replaceArgument(2, '%kernel.project_dir%');
