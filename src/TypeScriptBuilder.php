@@ -4,8 +4,8 @@ namespace Sensiolabs\TypeScriptBundle;
 
 use Sensiolabs\TypeScriptBundle\Tools\TypeScriptBinary;
 use Sensiolabs\TypeScriptBundle\Tools\TypescriptBinaryFactory;
-use Sensiolabs\TypeScriptBundle\Tools\WatchexecBinary;
-use Sensiolabs\TypeScriptBundle\Tools\WatchexecBinaryFactory;
+use Sensiolabs\TypeScriptBundle\Tools\WatcherBinary;
+use Sensiolabs\TypeScriptBundle\Tools\WatcherBinaryFactory;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
@@ -14,7 +14,7 @@ class TypeScriptBuilder
 {
     private ?SymfonyStyle $output = null;
     private ?TypeScriptBinary $buildBinary = null;
-    private ?WatchexecBinary $watchexecBinary = null;
+    private ?WatcherBinary $watchexecBinary = null;
 
     public function __construct(
         private readonly array $typeScriptFilesPaths,
@@ -57,30 +57,32 @@ class TypeScriptBuilder
             return $buildProcess;
         }
 
-        $watchProcess = $this->getWatchexecBinary()->createProcess($relativePath);
-        $watchProcess->setTimeout(null)->setIdleTimeout(null);
-        $this->output?->note(sprintf('Watching for changes in %s...', $relativePath));
-        if ($this->output?->isVerbose()) {
-            $this->output->writeln([
-                '  Command:',
-                '    '.$watchProcess->getCommandLine(),
-            ]);
-        }
-        $watchProcess->start(function ($type, $buffer) {
-            if ('err' === $type) {
-                throw new \RuntimeException($buffer);
-            }
-            $path = trim($buffer);
-            if ('/' === $path) {
-                return;
-            }
-            $newProcess = $this->createBuildProcess($path);
-            $newProcess->wait(function ($type, $buffer) {
-                $this->output?->write($buffer);
-            });
-        });
-
-        return $watchProcess;
+        return $this->getWatchexecBinary()->startWatch($relativePath, fn ($path, $operation) => $this->createBuildProcess($path), ['ts']);
+        //
+        //        $watchProcess = $this->getWatchexecBinary()->createProcess($relativePath);
+        //        $watchProcess->setTimeout(null)->setIdleTimeout(null);
+        //        $this->output?->note(sprintf('Watching for changes in %s...', $relativePath));
+        //        if ($this->output?->isVerbose()) {
+        //            $this->output->writeln([
+        //                '  Command:',
+        //                '    '.$watchProcess->getCommandLine(),
+        //            ]);
+        //        }
+        //        $watchProcess->start(function ($type, $buffer) {
+        //            if ('err' === $type) {
+        //                throw new \RuntimeException($buffer);
+        //            }
+        //            $path = trim($buffer);
+        //            if ('/' === $path) {
+        //                return;
+        //            }
+        //            $newProcess = $this->createBuildProcess($path);
+        //            $newProcess->wait(function ($type, $buffer) {
+        //                $this->output?->write($buffer);
+        //            });
+        //        });
+        //
+        //        return $watchProcess;
     }
 
     public function setOutput(SymfonyStyle $output): void
@@ -101,16 +103,13 @@ class TypeScriptBuilder
             $typescriptBinaryFactory->getBinaryFromServerSpecs(\PHP_OS, php_uname('m'), php_uname('r'));
     }
 
-    private function getWatchexecBinary(): WatchexecBinary
+    private function getWatchexecBinary(): WatcherBinary
     {
         if ($this->watchexecBinary) {
             return $this->watchexecBinary;
         }
-        $watchexecBinaryFactory = new WatchexecBinaryFactory($this->binaryDownloadDir);
-        $watchexecBinaryFactory->setOutput($this->output);
+        $watchexecBinaryFactory = new WatcherBinaryFactory();
 
-        return $this->watchexecBinary = $this->watchexecBinaryPath ?
-            $watchexecBinaryFactory->getBinaryFromPath($this->watchexecBinaryPath) :
-            $watchexecBinaryFactory->getBinaryFromServerSpecs(\PHP_OS, php_uname('m'), php_uname('r'));
+        return $this->watchexecBinary = $watchexecBinaryFactory->getBinaryFromServerSpecs(\PHP_OS, php_uname('m'), php_uname('r'));
     }
 }
