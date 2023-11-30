@@ -45,7 +45,7 @@ Then run the command:
 .. code-block:: terminal
 
     # To compile only the typescript files
-    $ php bin/console typescript:build
+    $ php bin/console typescript:build --watch
 
     # To compile ALL your assets
     $ php bin/console asset-map:compile
