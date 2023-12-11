@@ -8,6 +8,11 @@ This bundle allows you to compile TypeScript and use it with Symfony's AssetMapp
 - Adds a ``typescript:build`` command to compile your typescript files
 - Automatically compiles your typescript files when you run ``asset-map:compile`` command
 
+## Installation
+```bash
+composer require sensiolabs/typescript-bundle
+```
+
 ## Documentation
 
 Read the documentation at: [doc/index.md](doc/index.rst)
