@@ -4,7 +4,7 @@ TypeScript Bundle For Symfony
 This bundle allows you to compile TypeScript and use it with Symfony's AssetMapper Component
 (no Node required!).
 
-- Automatically downloads the correct [SWC](https://github.com/swc-project/swc) binary
+- Automatically downloads the correct `SWC <https://github.com/swc-project/swc>`_ binary
 - Adds a ``typescript:build`` command to compile your typescript files
 - Automatically compiles your typescript files when you run ``asset-map:compile`` command
 
@@ -25,6 +25,7 @@ Start by setting the ``sensiolabs_typescript.source_dir`` option to the list of 
 For instance, if your TypeScript code lives in ``assets/typescript`` directory, with a ``assets/typescript/app.ts`` entrypoint file, you could set the option like this:
 
 .. code-block:: yaml
+
     # config/packages/asset_mapper.yaml
     sensiolabs_typescript:
         source_dir: ['%kernel.project_dir%/assets/typescript']

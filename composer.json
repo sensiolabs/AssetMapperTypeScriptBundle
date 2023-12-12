@@ -4,6 +4,7 @@
     "license": "MIT",
     "type": "symfony-bundle",
     "keywords": ["asset-mapper", "typescript"],
+    "homepage": "https://github.com/sensiolabs/AssetMapperTypeScriptBundle",
     "authors": [
         {
             "name": "Maelan LE BORGNE",
