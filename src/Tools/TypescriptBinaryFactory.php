@@ -80,14 +80,14 @@ class TypescriptBinaryFactory
         }
 
         if (str_contains($os, 'win')) {
-            if ('x86_64' === $machine) {
-                return 'swc-win32-x64-msvc';
+            if ('x86_64' === $machine || 'amd64' === $machine) {
+                return 'swc-win32-x64-msvc.exe';
             }
-            if ('amd64' === $machine) {
-                return 'swc-win32-arm64-msvc';
+            if ('arm64' === $machine) {
+                return 'swc-win32-arm64-msvc.exe';
             }
             if ('i586' === $machine) {
-                return 'swc-win32-ia32-msvc';
+                return 'swc-win32-ia32-msvc.exe';
             }
 
             throw new \Exception(sprintf('No matching machine found for Windows platform (Machine: %s).', $machine));

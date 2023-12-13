@@ -66,9 +66,10 @@ class TypeScriptBinaryFactoryTest extends TestCase
             ['Linux', 'x86_64', 'linux-musl', 'swc-linux-x64-musl'],
             ['Linux', 'arm64', 'linux-musl', 'swc-linux-arm64-musl'],
 
-            ['Windows', 'x86_64', 'windows', 'swc-win32-x64-msvc'],
-            ['Windows', 'amd64', 'windows', 'swc-win32-arm64-msvc'],
-            ['Windows', 'i586', 'windows', 'swc-win32-ia32-msvc'],
+            ['Windows', 'x86_64', 'windows', 'swc-win32-x64-msvc.exe'],
+            ['Windows', 'amd64', 'windows', 'swc-win32-x64-msvc.exe'],
+            ['Windows', 'arm64', 'windows', 'swc-win32-arm64-msvc.exe'],
+            ['Windows', 'i586', 'windows', 'swc-win32-ia32-msvc.exe'],
 
             ['Undefined', 'x86_64', 'darwin', null, \Exception::class],
             ['Darwin', 'undefined', 'darwin', null, \Exception::class],
