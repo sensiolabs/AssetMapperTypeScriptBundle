@@ -30,8 +30,7 @@ class SensiolabsTypeScriptExtension extends Extension implements ConfigurationIn
             ->replaceArgument(1, '%kernel.project_dir%/var/typescript')
             ->replaceArgument(3, $config['binary_download_dir'])
             ->replaceArgument(4, $config['swc_binary'])
-            ->replaceArgument(5, $config['watchexec_binary']);
-
+        ;
         $container->findDefinition('sensiolabs_typescript.js_asset_compiler')
             ->replaceArgument(0, $config['source_dir'])
             ->replaceArgument(1, '%kernel.project_dir%/var/typescript')
