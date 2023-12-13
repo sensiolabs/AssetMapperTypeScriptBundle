@@ -1,5 +1,5 @@
 <?php
-//
+
 use Sensiolabs\TypeScriptBundle\AssetMapper\TypeScriptCompiler;
 use Sensiolabs\TypeScriptBundle\AssetMapper\TypeScriptPublicPathAssetPathResolver;
 use Sensiolabs\TypeScriptBundle\Command\TypeScriptBuildCommand;
@@ -7,9 +7,10 @@ use Sensiolabs\TypeScriptBundle\EventListener\PreAssetsCompileListener;
 use Sensiolabs\TypeScriptBundle\TypeScriptBuilder;
 use Symfony\Component\AssetMapper\Event\PreAssetsCompileEvent;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
+
 use function Symfony\Component\DependencyInjection\Loader\Configurator\abstract_arg;
-use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\param;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
 return static function (ContainerConfigurator $container) {
     $container->services()
@@ -20,7 +21,6 @@ return static function (ContainerConfigurator $container) {
                 param('kernel.project_dir'),
                 abstract_arg('path to the binaries download directory'),
                 abstract_arg('path to the swc binary'),
-                abstract_arg('path to the watchexec binary'),
             ])
         ->set('sensiolabs_typescript.command.build', TypeScriptBuildCommand::class)
             ->args([

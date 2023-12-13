@@ -22,7 +22,6 @@ class TypeScriptBuilder
         private readonly string $projectRootDir,
         private readonly string $binaryDownloadDir,
         private readonly ?string $buildBinaryPath,
-        private readonly ?string $watchexecBinaryPath,
     ) {
     }
 
@@ -58,31 +57,6 @@ class TypeScriptBuilder
         }
 
         return $this->getWatchexecBinary()->startWatch($relativePath, fn ($path, $operation) => $this->createBuildProcess($path), ['ts']);
-        //
-        //        $watchProcess = $this->getWatchexecBinary()->createProcess($relativePath);
-        //        $watchProcess->setTimeout(null)->setIdleTimeout(null);
-        //        $this->output?->note(sprintf('Watching for changes in %s...', $relativePath));
-        //        if ($this->output?->isVerbose()) {
-        //            $this->output->writeln([
-        //                '  Command:',
-        //                '    '.$watchProcess->getCommandLine(),
-        //            ]);
-        //        }
-        //        $watchProcess->start(function ($type, $buffer) {
-        //            if ('err' === $type) {
-        //                throw new \RuntimeException($buffer);
-        //            }
-        //            $path = trim($buffer);
-        //            if ('/' === $path) {
-        //                return;
-        //            }
-        //            $newProcess = $this->createBuildProcess($path);
-        //            $newProcess->wait(function ($type, $buffer) {
-        //                $this->output?->write($buffer);
-        //            });
-        //        });
-        //
-        //        return $watchProcess;
     }
 
     public function setOutput(SymfonyStyle $output): void

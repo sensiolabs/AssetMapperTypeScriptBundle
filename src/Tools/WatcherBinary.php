@@ -16,6 +16,9 @@ class WatcherBinary
      */
     public function startWatch(string $watchPath, callable $callback, array $extensions = []): Process
     {
+        if (!str_ends_with($watchPath, \DIRECTORY_SEPARATOR.'...')) {
+            $watchPath = rtrim($watchPath, \DIRECTORY_SEPARATOR).\DIRECTORY_SEPARATOR.'...';
+        }
         $process = new Process([$this->executablePath, $watchPath]);
 
         $process->start(function ($type, $buffer) use ($callback, $extensions) {
