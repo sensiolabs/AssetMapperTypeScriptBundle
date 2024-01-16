@@ -3,7 +3,7 @@
 namespace Sensiolabs\TypeScriptBundle;
 
 use Sensiolabs\TypeScriptBundle\Tools\TypeScriptBinary;
-use Sensiolabs\TypeScriptBundle\Tools\TypescriptBinaryFactory;
+use Sensiolabs\TypeScriptBundle\Tools\TypeScriptBinaryFactory;
 use Sensiolabs\TypeScriptBundle\Tools\WatcherBinary;
 use Sensiolabs\TypeScriptBundle\Tools\WatcherBinaryFactory;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -69,7 +69,7 @@ class TypeScriptBuilder
         if ($this->buildBinary) {
             return $this->buildBinary;
         }
-        $typescriptBinaryFactory = new TypescriptBinaryFactory($this->binaryDownloadDir);
+        $typescriptBinaryFactory = new TypeScriptBinaryFactory($this->binaryDownloadDir);
         $typescriptBinaryFactory->setOutput($this->output);
 
         return $this->buildBinary = $this->buildBinaryPath ?

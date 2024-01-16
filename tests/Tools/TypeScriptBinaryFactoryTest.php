@@ -3,7 +3,7 @@
 namespace Sensiolabs\TypeScriptBundle\Tests\Tools;
 
 use PHPUnit\Framework\TestCase;
-use Sensiolabs\TypeScriptBundle\Tools\TypescriptBinaryFactory;
+use Sensiolabs\TypeScriptBundle\Tools\TypeScriptBinaryFactory;
 
 class TypeScriptBinaryFactoryTest extends TestCase
 {
@@ -51,7 +51,7 @@ class TypeScriptBinaryFactoryTest extends TestCase
             $this->expectException($exception);
         }
 
-        $this->assertEquals($expectedBinaryName, TypescriptBinaryFactory::getBinaryNameFromServerSpecs($os, $machine, $kernel));
+        $this->assertEquals($expectedBinaryName, TypeScriptBinaryFactory::getBinaryNameFromServerSpecs($os, $machine, $kernel));
     }
 
     public function provideServerSpecs()
