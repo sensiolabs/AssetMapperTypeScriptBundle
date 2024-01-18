@@ -74,7 +74,7 @@ class TypeScriptBuilder
 
         return $this->buildBinary = $this->buildBinaryPath ?
             $typescriptBinaryFactory->getBinaryFromPath($this->buildBinaryPath) :
-            $typescriptBinaryFactory->getBinaryFromServerSpecs(\PHP_OS, php_uname('m'), php_uname('r'));
+            $typescriptBinaryFactory->getBinaryFromServerSpecs(\PHP_OS, php_uname('m'), file_exists('/etc/alpine-release') ? 'musl' : 'gnu');
     }
 
     private function getWatchexecBinary(): WatcherBinary
