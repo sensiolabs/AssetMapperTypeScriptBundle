@@ -22,6 +22,7 @@ class TypeScriptBuilder
         private readonly string $projectRootDir,
         private readonly string $binaryDownloadDir,
         private readonly ?string $buildBinaryPath,
+        private readonly ?string $configFile,
     ) {
     }
 
@@ -39,6 +40,9 @@ class TypeScriptBuilder
         $relativePath = rtrim($fs->makePathRelative($path, $this->projectRootDir), '/');
         if (str_starts_with($relativePath, '..')) {
             throw new \Exception(sprintf('The TypeScript file "%s" is not in the project directory "%s".', $path, $this->projectRootDir));
+        }
+        if ($this->configFile && file_exists($this->configFile)) {
+            $args = array_merge($args, ['--config-file', trim($fs->makePathRelative($this->configFile, $this->projectRootDir), '/')]);
         }
         $buildProcess = $this->getBuildBinary()->createProcess(array_merge(['compile', $relativePath], $args));
         $buildProcess->setWorkingDirectory($this->projectRootDir);

@@ -21,6 +21,7 @@ return static function (ContainerConfigurator $container) {
                 param('kernel.project_dir'),
                 abstract_arg('path to the binaries download directory'),
                 abstract_arg('path to the swc binary'),
+                abstract_arg('swc configuration file'),
             ])
         ->set('sensiolabs_typescript.command.build', TypeScriptBuildCommand::class)
             ->args([
