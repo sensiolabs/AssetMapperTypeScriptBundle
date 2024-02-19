@@ -14,7 +14,7 @@ class TypeScriptBuilder
 {
     private ?SymfonyStyle $output = null;
     private ?TypeScriptBinary $buildBinary = null;
-    private ?WatcherBinary $watchexecBinary = null;
+    private ?WatcherBinary $watcherBinary = null;
 
     public function __construct(
         private readonly array $typeScriptFilesPaths,
@@ -60,7 +60,7 @@ class TypeScriptBuilder
             return $buildProcess;
         }
 
-        return $this->getWatchexecBinary()->startWatch($relativePath, fn ($path, $operation) => $this->createBuildProcess($path), ['ts']);
+        return $this->getWatcherBinary()->startWatch($relativePath, fn ($path, $operation) => $this->createBuildProcess($path), ['ts']);
     }
 
     public function setOutput(SymfonyStyle $output): void
@@ -81,13 +81,13 @@ class TypeScriptBuilder
             $typescriptBinaryFactory->getBinaryFromServerSpecs(\PHP_OS, php_uname('m'), file_exists('/etc/alpine-release') ? 'musl' : 'gnu');
     }
 
-    private function getWatchexecBinary(): WatcherBinary
+    private function getWatcherBinary(): WatcherBinary
     {
-        if ($this->watchexecBinary) {
-            return $this->watchexecBinary;
+        if ($this->watcherBinary) {
+            return $this->watcherBinary;
         }
-        $watchexecBinaryFactory = new WatcherBinaryFactory();
+        $watcherBinaryFactory = new WatcherBinaryFactory();
 
-        return $this->watchexecBinary = $watchexecBinaryFactory->getBinaryFromServerSpecs(\PHP_OS, php_uname('m'), php_uname('r'));
+        return $this->watcherBinary = $watcherBinaryFactory->getBinaryFromServerSpecs(\PHP_OS);
     }
 }
