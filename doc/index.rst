@@ -103,9 +103,9 @@ This bundle already installed for you the right SWC binary. However, if you alre
 Configuring the compiler
 --------------------------
 
-You can configure the SWC compiler by setting the ``config_file`` option to the the path to your [.swcrc](https://swc.rs/docs/configuration/swcrc) file:
+You can configure the SWC compiler by setting the ``swc_config_file`` option to the the path to your [.swcrc](https://swc.rs/docs/configuration/swcrc) file:
 
 .. code-block:: yaml
 
     sensiolabs_typescript:
-        config_file: '%kernel.project_dir%/.swcrc'
+        swc_config_file: '%kernel.project_dir%/.swcrc'
