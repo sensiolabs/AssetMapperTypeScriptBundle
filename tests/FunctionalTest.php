@@ -1,12 +1,5 @@
 <?php
 
-/*
- * This file is part of the SymfonyCasts SassBundle package.
- * Copyright (c) SymfonyCasts <https://symfonycasts.com/>
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace Sensiolabs\TypeScriptBundle\Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -44,6 +37,7 @@ class FunctionalTest extends KernelTestCase
 
         $asset = $assetMapper->getAsset('typescript/main.ts');
         $this->assertInstanceOf(MappedAsset::class, $asset);
+        $this->assertIsString($asset->content);
         $this->assertStringContainsString(<<<EOF
             var greeting = "Hello, World!";
             console.log(greeting);

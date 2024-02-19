@@ -4,7 +4,7 @@ namespace Sensiolabs\TypeScriptBundle\Tools;
 
 class WatcherBinaryFactory
 {
-    public function getBinaryFromServerSpecs($os): WatcherBinary
+    public function getBinaryFromServerSpecs(string $os): WatcherBinary
     {
         $binaryName = self::getBinaryNameFromServerSpecs($os);
         $binaryPath = __DIR__.'/watcher/'.$binaryName;
@@ -15,7 +15,7 @@ class WatcherBinaryFactory
         return new WatcherBinary($binaryPath);
     }
 
-    public static function getBinaryNameFromServerSpecs($os)
+    public static function getBinaryNameFromServerSpecs(string $os): string
     {
         $os = strtolower($os);
         if (str_contains($os, 'darwin')) {
