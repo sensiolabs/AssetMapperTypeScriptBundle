@@ -9,14 +9,14 @@ class TypeScriptBinaryFactoryTest extends TestCase
 {
     private string $binaryDownloadDir = __DIR__.'/../fixtures/bin';
 
-    private function getBinaryFactory()
+    private function getBinaryFactory(): TypeScriptBinaryFactory
     {
         return new TypeScriptBinaryFactory(
             $this->binaryDownloadDir,
         );
     }
 
-    public function testGetBinaryFromPath()
+    public function testGetBinaryFromPath(): void
     {
         // Test that the binary is found and the process is created with the correct arguments
         $binary = $this->getBinaryFactory()->getBinaryFromPath($this->binaryDownloadDir.'/swc-linux-x64-gnu');
@@ -29,7 +29,7 @@ class TypeScriptBinaryFactoryTest extends TestCase
         $this->getBinaryFactory()->getBinaryFromPath('/wrong/path');
     }
 
-    public function testGetBinaryFromServerSpecs()
+    public function testGetBinaryFromServerSpecs(): void
     {
         // Test that the binary is downloaded and the process is created with the correct arguments
         $binary = $this->getBinaryFactory()->getBinaryFromServerSpecs('Linux', 'x86_64', 'linux');
@@ -45,16 +45,19 @@ class TypeScriptBinaryFactoryTest extends TestCase
     /**
      * @dataProvider provideServerSpecs
      */
-    public function testGetBinaryNameFromServerSpecs($os, $machine, $kernel, $expectedBinaryName, $exception = null)
+    public function testGetBinaryNameFromServerSpecs(string $os, string $machine, string $kernel, ?string $expectedBinaryName, ?string $exception = null): void
     {
-        if (null !== $exception) {
+        if (null !== $exception && is_subclass_of($exception, \Throwable::class)) {
             $this->expectException($exception);
         }
 
         $this->assertEquals($expectedBinaryName, TypeScriptBinaryFactory::getBinaryNameFromServerSpecs($os, $machine, $kernel));
     }
 
-    public function provideServerSpecs()
+    /**
+     * @return list<array<string|null>>
+     */
+    public static function provideServerSpecs(): array
     {
         return [
             ['Darwin', 'x86_64', 'darwin', 'swc-darwin-x64'],

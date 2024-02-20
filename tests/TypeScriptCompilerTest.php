@@ -17,13 +17,13 @@ class TypeScriptCompilerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $typeScriptFilesPaths = [realpath(self::ASSETS_DIR), realpath(self::ASSETS_DIR.'/../other_dir')];
+        $typeScriptFilesPaths = $this->getTypeScriptFilesPaths();
         $compiledFilesPath = self::FIXTURE_DIR.'/var/typescript';
         mkdir($compiledFilesPath, 0777, true);
         $this->compiler = new TypeScriptCompiler(
             $typeScriptFilesPaths,
             $compiledFilesPath,
-            realpath(self::FIXTURE_DIR)
+            self::FIXTURE_DIR,
         );
     }
 
@@ -36,21 +36,24 @@ class TypeScriptCompilerTest extends TestCase
     /**
      * @dataProvider provideAssetsForSupports
      */
-    public function testSupports(MappedAsset $asset, $supports)
+    public function testSupports(MappedAsset $asset, bool $supports): void
     {
         $this->assertEquals($supports, $this->compiler->supports($asset));
     }
 
+    /**
+     * @return iterable<array{MappedAsset, bool}>
+     */
     public static function provideAssetsForSupports(): iterable
     {
         yield 'file_in_the_dir' => [
             new MappedAsset('typescript/main.ts', self::ASSETS_DIR.'/typescript/main.ts'),
             true,
-            ];
+        ];
         yield 'file_not_in_the_dir' => [
             new MappedAsset('app.js', self::ASSETS_DIR.'/../app.js'),
             false,
-            ];
+        ];
         yield 'file_in_the_list' => [
             new MappedAsset('custom.module.ts', self::ASSETS_DIR.'/typescript/dir/custom.module.ts'),
             true,
@@ -68,12 +71,26 @@ class TypeScriptCompilerTest extends TestCase
     public function testCompile(): void
     {
         $assetMapper = $this->createMock(AssetMapperInterface::class);
-        $asset = new MappedAsset('typescript/main.ts', realpath(self::ASSETS_DIR.'/typescript/main.ts'));
+        $asset = new MappedAsset('typescript/main.ts', self::ASSETS_DIR.'/typescript/main.ts');
         $string = "console.log('This is a test');";
         $compiledFilePath = self::FIXTURE_DIR.'/var/typescript/assets/typescript/main.js';
         mkdir(\dirname($compiledFilePath), 0777, true);
         file_put_contents($compiledFilePath, $string);
         $content = $this->compiler->compile('', $asset, $assetMapper);
         $this->assertEquals($string, $content);
+    }
+
+    /**
+     * @return array{string, string}
+     */
+    private function getTypeScriptFilesPaths(): array
+    {
+        $basePath = realpath(self::ASSETS_DIR);
+        $secondPath = realpath(self::ASSETS_DIR.'/../other_dir');
+        if (false === $basePath || false === $secondPath) {
+            throw new \RuntimeException('The assets directory does not exist.');
+        }
+
+        return [$basePath, $secondPath];
     }
 }

@@ -23,6 +23,9 @@ class TypeScriptPublicPathAssetPathResolver implements PublicAssetsPathResolverI
 
     public function getPublicFilesystemPath(): string
     {
+        if (!method_exists($this->decorator, 'getPublicFilesystemPath')) {
+            throw new \LogicException('The decorated resolver does not implement the "getPublicFilesystemPath" method.');
+        }
         $path = $this->decorator->getPublicFilesystemPath();
 
         if (str_ends_with($path, '.ts')) {

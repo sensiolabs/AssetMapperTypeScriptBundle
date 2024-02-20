@@ -12,10 +12,13 @@ use Symfony\Component\Process\Process;
 
 class TypeScriptBuilder
 {
-    private ?SymfonyStyle $output = null;
+    private SymfonyStyle $output;
     private ?TypeScriptBinary $buildBinary = null;
     private ?WatcherBinary $watcherBinary = null;
 
+    /**
+     * @param list<string> $typeScriptFilesPaths
+     */
     public function __construct(
         private readonly array $typeScriptFilesPaths,
         private readonly string $compiledFilesPaths,
@@ -47,8 +50,8 @@ class TypeScriptBuilder
         $buildProcess = $this->getBuildBinary()->createProcess(array_merge(['compile', $relativePath], $args));
         $buildProcess->setWorkingDirectory($this->projectRootDir);
 
-        $this->output?->note(sprintf('Executing SWC compile on %s.', $relativePath));
-        if ($this->output?->isVerbose()) {
+        $this->output->note(sprintf('Executing SWC compile on %s.', $relativePath));
+        if ($this->output->isVerbose()) {
             $this->output->writeln([
                 '  Command:',
                 '    '.$buildProcess->getCommandLine(),

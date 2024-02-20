@@ -39,7 +39,10 @@ class SensiolabsTypeScriptExtension extends Extension implements ConfigurationIn
         ;
     }
 
-    public function getConfiguration(array $config, ContainerBuilder $container): ?ConfigurationInterface
+    /**
+     * @param array<array<mixed>> $configs
+     */
+    public function getConfiguration(array $configs, ContainerBuilder $container): ConfigurationInterface
     {
         return $this;
     }

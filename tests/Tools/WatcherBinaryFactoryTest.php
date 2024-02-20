@@ -10,7 +10,7 @@ class WatcherBinaryFactoryTest extends TestCase
     private string $watchPath = __DIR__.'/../fixtures/assets/typescript';
     private string $binaryDir = __DIR__.'/../../src/Tools/watcher';
 
-    public function testGetBinaryFromServerSpecs()
+    public function testGetBinaryFromServerSpecs(): void
     {
         // Test that the binary exists and the process is created with the correct arguments
         $binary = (new WatcherBinaryFactory())->getBinaryFromServerSpecs('Linux');
@@ -26,16 +26,19 @@ class WatcherBinaryFactoryTest extends TestCase
     /**
      * @dataProvider provideServerSpecs
      */
-    public function testGetBinaryNameFromServerSpecs($os, $expectedBinaryName, $exception = null)
+    public function testGetBinaryNameFromServerSpecs(string $os, ?string $expectedBinaryName, ?string $exception = null): void
     {
-        if (null !== $exception) {
+        if (null !== $exception && is_subclass_of($exception, \Throwable::class)) {
             $this->expectException($exception);
         }
 
         $this->assertEquals($expectedBinaryName, WatcherBinaryFactory::getBinaryNameFromServerSpecs($os));
     }
 
-    public function provideServerSpecs()
+    /**
+     * @return list<array<string|null>>
+     */
+    public static function provideServerSpecs(): array
     {
         return [
             ['Darwin', 'watcher-darwin'],

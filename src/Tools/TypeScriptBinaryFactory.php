@@ -2,7 +2,6 @@
 
 namespace Sensiolabs\TypeScriptBundle\Tools;
 
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -11,21 +10,22 @@ class TypeScriptBinaryFactory
 {
     private const VERSION = 'v1.3.92';
     private const SWC_RELEASE_URL_PATTERN = 'https://github.com/swc-project/swc/releases/download/%s/%s';
+    private HttpClientInterface $httpClient;
+    private SymfonyStyle $output;
 
     public function __construct(
         private readonly string $binaryDownloadDir,
-        private ?HttpClientInterface $httpClient = null,
-        private ?OutputInterface $output = null,
+        ?HttpClientInterface $httpClient = null,
     ) {
         $this->httpClient = $httpClient ?? HttpClient::create();
     }
 
-    public function getBinaryFromPath($pathToExecutable): TypeScriptBinary
+    public function getBinaryFromPath(string $pathToExecutable): TypeScriptBinary
     {
         return new TypeScriptBinary($pathToExecutable);
     }
 
-    public function getBinaryFromServerSpecs($os, $machine, $kernel): TypeScriptBinary
+    public function getBinaryFromServerSpecs(string $os, string $machine, string $kernel): TypeScriptBinary
     {
         $binaryName = self::getBinaryNameFromServerSpecs($os, $machine, $kernel);
         if (!file_exists($this->binaryDownloadDir.'/'.$binaryName)) {
@@ -35,7 +35,7 @@ class TypeScriptBinaryFactory
         return $this->getBinaryFromPath($this->binaryDownloadDir.'/'.$binaryName);
     }
 
-    public function setOutput(?SymfonyStyle $output): self
+    public function setOutput(SymfonyStyle $output): self
     {
         $this->output = $output;
 
@@ -50,10 +50,10 @@ class TypeScriptBinaryFactory
     }
 
     public static function getBinaryNameFromServerSpecs(
-        $os,
-        $machine,
-        $kernel,
-    ) {
+        string $os,
+        string $machine,
+        string $kernel,
+    ): string {
         list($os, $machine, $kernel) = [strtolower($os), strtolower($machine), strtolower($kernel)];
         if (str_contains($os, 'darwin')) {
             if ('arm64' === $machine) {
@@ -96,7 +96,7 @@ class TypeScriptBinaryFactory
         throw new \Exception(sprintf('Unknown platform or architecture (OS: %s, Machine: %s).', $os, $machine));
     }
 
-    private function downloadAndExtract($binaryName): void
+    private function downloadAndExtract(string $binaryName): void
     {
         if (!is_dir($this->binaryDownloadDir)) {
             mkdir($this->binaryDownloadDir, 0777, true);
@@ -107,10 +107,10 @@ class TypeScriptBinaryFactory
         }
         $url = sprintf(self::SWC_RELEASE_URL_PATTERN, self::VERSION, $binaryName);
 
-        if ($this->output?->isVerbose()) {
-            $this->output?->note(sprintf('Downloading SWC binary from "%s" to "%s"...', $url, $targetPath));
+        if ($this->output->isVerbose()) {
+            $this->output->note(sprintf('Downloading SWC binary from "%s" to "%s"...', $url, $targetPath));
         } else {
-            $this->output?->note('Downloading SWC binary ...');
+            $this->output->note('Downloading SWC binary ...');
         }
 
         $response = $this->httpClient->request('GET', $url, [
@@ -120,20 +120,23 @@ class TypeScriptBinaryFactory
                 }
 
                 if (!$progressBar) {
-                    $progressBar = $this->output?->createProgressBar($dlSize);
+                    $progressBar = $this->output->createProgressBar($dlSize);
                 }
 
-                $progressBar?->setProgress($dlNow);
+                $progressBar->setProgress($dlNow);
             },
         ]);
         $fileHandler = fopen($targetPath, 'w');
+        if (false === $fileHandler) {
+            throw new \Exception(sprintf('Could not open file "%s" for writing.', $targetPath));
+        }
         foreach ($this->httpClient->stream($response) as $chunk) {
             fwrite($fileHandler, $chunk->getContent());
         }
 
         fclose($fileHandler);
         $progressBar?->finish();
-        $this->output?->writeln('');
+        $this->output->writeln('');
 
         chmod($this->binaryDownloadDir.'/'.$binaryName, 7770);
     }
