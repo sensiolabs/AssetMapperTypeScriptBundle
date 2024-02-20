@@ -10,10 +10,6 @@ class SensiolabsTypeScriptBundle extends Bundle
 {
     public function getContainerExtension(): ExtensionInterface
     {
-        if (null === $this->extension || false === $this->extension) {
-            $this->extension = new SensiolabsTypeScriptExtension();
-        }
-
-        return $this->extension;
+        return $this->extension ?: new SensiolabsTypeScriptExtension();
     }
 }
