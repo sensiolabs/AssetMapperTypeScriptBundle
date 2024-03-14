@@ -103,7 +103,7 @@ This bundle already installed for you the right SWC binary. However, if you alre
 Configuring the compiler
 --------------------------
 
-You can configure the SWC compiler by setting the ``swc_config_file`` option to the the path to your [.swcrc](https://swc.rs/docs/configuration/swcrc) file:
+You can configure the SWC compiler by setting the ``swc_config_file`` option to the the path to your `.swcrc <https://swc.rs/docs/configuration/swcrc>`_ file:
 
 .. code-block:: yaml
 
