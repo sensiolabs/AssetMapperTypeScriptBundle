@@ -42,6 +42,16 @@ Then load your TypeScript files in your templates:
         <script type="text/javascript" src="{{ asset('typescript/app.ts') }}"></script>
     {% endblock %}
 
+For Symfony 7: 
+
+.. code-block:: html+twig
+
+    {# templates/base.html.twig #}
+
+    {% block javascripts %}
+       {{ importmap('typescript/app') }}
+    {% endblock %}
+     
 Finally run this command:
 
 .. code-block:: terminal
