@@ -138,6 +138,6 @@ class TypeScriptBinaryFactory
         $progressBar?->finish();
         $this->output->writeln('');
 
-        chmod($this->binaryDownloadDir.'/'.$binaryName, 7770);
+        chmod($this->binaryDownloadDir.'/'.$binaryName, 0777);
     }
 }
