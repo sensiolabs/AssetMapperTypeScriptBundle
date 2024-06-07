@@ -15,7 +15,7 @@ composer require sensiolabs/typescript-bundle
 
 ## Documentation
 
-Read the documentation at: [doc/index.rst](doc/index.rst)
+Read the documentation at: [https://symfony.com/bundles/AssetMapperTypeScriptBundle/current/index.html](https://symfony.com/bundles/AssetMapperTypeScriptBundle/current/index.html)
 
 ## Credits
 This bundle was greatly inspired by the [Sass Bundle](https://github.com/SymfonyCasts/sass-bundle) from [SymfonyCasts](https://github.com/SymfonyCasts).
