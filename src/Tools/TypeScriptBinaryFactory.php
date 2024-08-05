@@ -64,7 +64,7 @@ class TypeScriptBinaryFactory
                 return 'swc-darwin-x64';
             }
 
-            throw new \Exception(sprintf('No matching machine found for Darwin platform (Machine: %s).', $machine));
+            throw new \Exception(\sprintf('No matching machine found for Darwin platform (Machine: %s).', $machine));
         }
 
         if (str_contains($os, 'linux')) {
@@ -76,7 +76,7 @@ class TypeScriptBinaryFactory
                 return 'swc-linux-x64-'.$kernelVersion;
             }
 
-            throw new \Exception(sprintf('No matching machine found for Linux platform (Machine: %s).', $machine));
+            throw new \Exception(\sprintf('No matching machine found for Linux platform (Machine: %s).', $machine));
         }
 
         if (str_contains($os, 'win')) {
@@ -90,10 +90,10 @@ class TypeScriptBinaryFactory
                 return 'swc-win32-ia32-msvc.exe';
             }
 
-            throw new \Exception(sprintf('No matching machine found for Windows platform (Machine: %s).', $machine));
+            throw new \Exception(\sprintf('No matching machine found for Windows platform (Machine: %s).', $machine));
         }
 
-        throw new \Exception(sprintf('Unknown platform or architecture (OS: %s, Machine: %s).', $os, $machine));
+        throw new \Exception(\sprintf('Unknown platform or architecture (OS: %s, Machine: %s).', $os, $machine));
     }
 
     private function downloadAndExtract(string $binaryName): void
@@ -105,10 +105,10 @@ class TypeScriptBinaryFactory
         if (file_exists($targetPath)) {
             return;
         }
-        $url = sprintf(self::SWC_RELEASE_URL_PATTERN, self::VERSION, $binaryName);
+        $url = \sprintf(self::SWC_RELEASE_URL_PATTERN, self::VERSION, $binaryName);
 
         if ($this->output->isVerbose()) {
-            $this->output->note(sprintf('Downloading SWC binary from "%s" to "%s"...', $url, $targetPath));
+            $this->output->note(\sprintf('Downloading SWC binary from "%s" to "%s"...', $url, $targetPath));
         } else {
             $this->output->note('Downloading SWC binary ...');
         }
@@ -128,7 +128,7 @@ class TypeScriptBinaryFactory
         ]);
         $fileHandler = fopen($targetPath, 'w');
         if (false === $fileHandler) {
-            throw new \Exception(sprintf('Could not open file "%s" for writing.', $targetPath));
+            throw new \Exception(\sprintf('Could not open file "%s" for writing.', $targetPath));
         }
         foreach ($this->httpClient->stream($response) as $chunk) {
             fwrite($fileHandler, $chunk->getContent());

@@ -42,7 +42,7 @@ class TypeScriptBuilder
         $fs = new Filesystem();
         $relativePath = rtrim($fs->makePathRelative($path, $this->projectRootDir), '/');
         if (str_starts_with($relativePath, '..')) {
-            throw new \Exception(sprintf('The TypeScript file "%s" is not in the project directory "%s".', $path, $this->projectRootDir));
+            throw new \Exception(\sprintf('The TypeScript file "%s" is not in the project directory "%s".', $path, $this->projectRootDir));
         }
         if ($this->configFile && file_exists($this->configFile)) {
             $args = array_merge($args, ['--config-file', trim($fs->makePathRelative($this->configFile, $this->projectRootDir), '/')]);
@@ -50,7 +50,7 @@ class TypeScriptBuilder
         $buildProcess = $this->getBuildBinary()->createProcess(array_merge(['compile', $relativePath], $args));
         $buildProcess->setWorkingDirectory($this->projectRootDir);
 
-        $this->output->note(sprintf('Executing SWC compile on %s.', $relativePath));
+        $this->output->note(\sprintf('Executing SWC compile on %s.', $relativePath));
         if ($this->output->isVerbose()) {
             $this->output->writeln([
                 '  Command:',

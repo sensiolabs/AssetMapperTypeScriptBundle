@@ -9,7 +9,7 @@ class WatcherBinaryFactory
         $binaryName = self::getBinaryNameFromServerSpecs($os);
         $binaryPath = __DIR__.'/watcher/'.$binaryName;
         if (!file_exists($binaryPath)) {
-            throw new \Exception(sprintf('The watcher binary could not be found at the provided path : "%s"', $binaryPath));
+            throw new \Exception(\sprintf('The watcher binary could not be found at the provided path : "%s"', $binaryPath));
         }
 
         return new WatcherBinary($binaryPath);
@@ -28,6 +28,6 @@ class WatcherBinaryFactory
             return 'watcher-windows.exe';
         }
 
-        throw new \Exception(sprintf('Unknown platform or architecture (OS: %s).', $os));
+        throw new \Exception(\sprintf('Unknown platform or architecture (OS: %s).', $os));
     }
 }
