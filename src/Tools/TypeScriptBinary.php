@@ -10,7 +10,7 @@ class TypeScriptBinary
         private readonly string $pathToExecutable,
     ) {
         if (!file_exists($this->pathToExecutable)) {
-            throw new \Exception(sprintf('The Typescript binary could not be found at the provided path : "%s"', $this->pathToExecutable));
+            throw new \Exception(\sprintf('The Typescript binary could not be found at the provided path : "%s"', $this->pathToExecutable));
         }
     }
 

@@ -34,7 +34,7 @@ class TypeScriptCompiler implements AssetCompilerInterface
         foreach ($this->typeScriptFilesPaths as $path) {
             $realTypeScriptPath = realpath($path);
             if (false === $realTypeScriptPath) {
-                throw new \Exception(sprintf('The TypeScript directory "%s" does not exist', $path));
+                throw new \Exception(\sprintf('The TypeScript directory "%s" does not exist', $path));
             }
             // If the asset matches one of the TypeScript files source paths
             if ($realSourcePath === $realTypeScriptPath) {
@@ -46,19 +46,19 @@ class TypeScriptCompiler implements AssetCompilerInterface
             }
         }
 
-        throw new \Exception(sprintf('The TypeScript file "%s" is not in the TypeScript files paths. Check the asset path or your "sensiolabs_typescript.source_dir" in your config', $realSourcePath));
+        throw new \Exception(\sprintf('The TypeScript file "%s" is not in the TypeScript files paths. Check the asset path or your "sensiolabs_typescript.source_dir" in your config', $realSourcePath));
     }
 
     public function compile(string $content, MappedAsset $asset, AssetMapperInterface $assetMapper): string
     {
         $realSourcePath = realpath($asset->sourcePath);
         if (false === $realSourcePath) {
-            throw new \Exception(sprintf('The TypeScript file "%s" does not exist', $asset->sourcePath));
+            throw new \Exception(\sprintf('The TypeScript file "%s" does not exist', $asset->sourcePath));
         }
         foreach ($this->typeScriptFilesPaths as $typeScriptFilesPath) {
             $realTypeScriptPath = realpath($typeScriptFilesPath);
             if (false === $realTypeScriptPath) {
-                throw new \Exception(sprintf('The TypeScript directory "%s" does not exist', $typeScriptFilesPath));
+                throw new \Exception(\sprintf('The TypeScript directory "%s" does not exist', $typeScriptFilesPath));
             }
             if (str_starts_with($realSourcePath, $realTypeScriptPath)) {
                 $fileName = basename($realSourcePath, '.ts');
@@ -69,7 +69,7 @@ class TypeScriptCompiler implements AssetCompilerInterface
         }
 
         if (!isset($jsFile)) {
-            throw new \Exception(sprintf('The TypeScript file "%s" is not in the TypeScript files paths. Check the asset path or your "sensiolabs_typescript.source_dir" in your config', $asset->sourcePath));
+            throw new \Exception(\sprintf('The TypeScript file "%s" is not in the TypeScript files paths. Check the asset path or your "sensiolabs_typescript.source_dir" in your config', $asset->sourcePath));
         }
         $asset->addFileDependency($jsFile);
 
