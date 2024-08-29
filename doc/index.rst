@@ -102,13 +102,13 @@ Using a different binary
 
 This bundle already installed for you the right SWC binary. However, if you already
 have a SWC binary installed on your machine you can instruct the bundle to use
-that binary with the ``binary`` option:
+that binary with the ``swc_binary`` option:
 
 .. code-block:: yaml
 
     # config/packages/asset_mapper.yaml
     sensiolabs_typescript:
-        binary: 'node_modules/.bin/swc'
+        swc_binary: 'node_modules/.bin/swc'
 
 Configuring the compiler
 ------------------------
