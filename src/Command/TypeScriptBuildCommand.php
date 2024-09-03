@@ -17,7 +17,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class TypeScriptBuildCommand extends Command
 {
     public function __construct(
-        private TypeScriptBuilder $typeScriptBuilder
+        private TypeScriptBuilder $typeScriptBuilder,
     ) {
         parent::__construct();
     }
