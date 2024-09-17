@@ -115,11 +115,11 @@ SWC version to compile your codebase if you need a newer feature or bug fix:
 
 .. code-block:: yaml
 
-    # config/packages/asset_mapper.yaml
+    # config/packages/sensiolabs_typescript.yaml
     sensiolabs_typescript:
         swc_version: v1.7.27-nightly-20240911.1
 
-Note that you should remove the existing SWC binary in the `var` directory after switching the `swc_version`; otherwise, it will use the old binary.
+Note that you should remove the existing SWC binary in the download directory (``var`` by default) after switching the ``swc_version``; the download is only triggered if no binary is found in the download directory. Otherwise, the existing binary will still be used.
 
 Configuring the compiler
 ------------------------
