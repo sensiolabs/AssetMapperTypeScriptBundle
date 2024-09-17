@@ -31,6 +31,7 @@ class SensiolabsTypeScriptExtension extends Extension implements ConfigurationIn
             ->replaceArgument(3, $config['binary_download_dir'])
             ->replaceArgument(4, $config['swc_binary'])
             ->replaceArgument(5, $config['swc_config_file'])
+            ->replaceArgument(6, $config['swc_version'])
         ;
         $container->findDefinition('sensiolabs_typescript.js_asset_compiler')
             ->replaceArgument(0, $config['source_dir'])
@@ -74,6 +75,10 @@ class SensiolabsTypeScriptExtension extends Extension implements ConfigurationIn
                 ->scalarNode('swc_config_file')
                     ->info('Path to .swcrc configuration file to use')
                     ->defaultValue('%kernel.project_dir%/.swcrc')
+                ->end()
+                ->scalarNode('swc_version')
+                    ->info('The SWC version to use')
+                    ->defaultValue('v1.3.92')
                 ->end()
             ->end()
         ;

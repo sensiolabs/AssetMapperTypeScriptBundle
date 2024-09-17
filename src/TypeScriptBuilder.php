@@ -26,6 +26,7 @@ class TypeScriptBuilder
         private readonly string $binaryDownloadDir,
         private readonly ?string $buildBinaryPath,
         private readonly ?string $configFile,
+        private readonly string $swcVersion,
     ) {
     }
 
