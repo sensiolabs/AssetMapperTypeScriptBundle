@@ -13,6 +13,7 @@ class TypeScriptBinaryFactoryTest extends TestCase
     {
         return new TypeScriptBinaryFactory(
             $this->binaryDownloadDir,
+            'v1.3.92'
         );
     }
 
