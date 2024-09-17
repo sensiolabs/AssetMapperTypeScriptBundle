@@ -110,6 +110,17 @@ that binary with the ``swc_binary`` option:
     sensiolabs_typescript:
         swc_binary: 'node_modules/.bin/swc'
 
+By default, the bundle uses SWC v1.3.92. However, you can specify a different
+SWC version to compile your codebase if you need a newer feature or bug fix:
+
+.. code-block:: yaml
+
+    # config/packages/asset_mapper.yaml
+    sensiolabs_typescript:
+        swc_version: v1.7.27-nightly-20240911.1
+
+Note that you should remove the existing SWC binary in the `var` directory after switching the `swc_version`; otherwise, it will use the old binary.
+
 Configuring the compiler
 ------------------------
 
