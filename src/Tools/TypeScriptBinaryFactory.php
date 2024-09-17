@@ -8,13 +8,13 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class TypeScriptBinaryFactory
 {
-    private const VERSION = 'v1.3.92';
     private const SWC_RELEASE_URL_PATTERN = 'https://github.com/swc-project/swc/releases/download/%s/%s';
     private HttpClientInterface $httpClient;
     private SymfonyStyle $output;
 
     public function __construct(
         private readonly string $binaryDownloadDir,
+        private readonly string $swcVersion,
         ?HttpClientInterface $httpClient = null,
     ) {
         $this->httpClient = $httpClient ?? HttpClient::create();
@@ -105,7 +105,7 @@ class TypeScriptBinaryFactory
         if (file_exists($targetPath)) {
             return;
         }
-        $url = \sprintf(self::SWC_RELEASE_URL_PATTERN, self::VERSION, $binaryName);
+        $url = \sprintf(self::SWC_RELEASE_URL_PATTERN, $this->swcVersion, $binaryName);
 
         if ($this->output->isVerbose()) {
             $this->output->note(\sprintf('Downloading SWC binary from "%s" to "%s"...', $url, $targetPath));
