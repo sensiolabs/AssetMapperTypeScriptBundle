@@ -126,6 +126,15 @@ class TypeScriptBinaryFactory
                 $progressBar->setProgress($dlNow);
             },
         ]);
+
+        if (200 !== $statusCode = $response->getStatusCode()) {
+            $exceptionMessage = \sprintf('Could not download SWC binary from "%s" (request responded with %d).', $url, $statusCode);
+            if (404 === $statusCode) {
+                $exceptionMessage .= PHP_EOL.\sprintf('Check that the version "%s" defined in "sensiolabs_typescript.swc_version" exists.', $this->swcVersion);
+            }
+            throw new \Exception($exceptionMessage);
+        }
+
         $fileHandler = fopen($targetPath, 'w');
         if (false === $fileHandler) {
             throw new \Exception(\sprintf('Could not open file "%s" for writing.', $targetPath));
