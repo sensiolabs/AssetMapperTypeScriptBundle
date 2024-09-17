@@ -77,7 +77,7 @@ class TypeScriptBuilder
         if ($this->buildBinary) {
             return $this->buildBinary;
         }
-        $typescriptBinaryFactory = new TypeScriptBinaryFactory($this->binaryDownloadDir);
+        $typescriptBinaryFactory = new TypeScriptBinaryFactory($this->binaryDownloadDir, $this->swcVersion);
         $typescriptBinaryFactory->setOutput($this->output);
 
         return $this->buildBinary = $this->buildBinaryPath ?
