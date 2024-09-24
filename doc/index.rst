@@ -21,26 +21,12 @@ Usage
 -----
 
 Start by setting the ``sensiolabs_typescript.source_dir`` option to the list of
-locations where your TypeScript files are located.
+locations where your TypeScript files are located (defaults to ``[%kernel.project_dir%/assets]``).
 
-For instance, if your TypeScript code lives in ``assets/typescript/`` directory,
-with an ``assets/typescript/app.ts`` entrypoint file, set the option like this:
-
-.. code-block:: yaml
-
-    # config/packages/asset_mapper.yaml
-    sensiolabs_typescript:
-        source_dir: ['%kernel.project_dir%/assets/typescript']
-
-Then load your TypeScript files in your templates:
-
-.. code-block:: html+twig
-
-    {# templates/base.html.twig #}
-
-    {% block javascripts %}
-        <script type="text/javascript" src="{{ asset('typescript/app.ts') }}"></script>
-    {% endblock %}
+There are three ways to use your TypeScript files using this bundle:
+* By defining TypeScript files as **entrypoints** in ``importmap.php``, then using the `importmap() Twig function <https://symfony.com/doc/current/frontend/asset_mapper.html#how-does-the-importmap-work>`_.
+* By **importing** TypeScript files from your existing JavaScript files.
+* By including a raw file in your templates ``<script type="module" src="{{ asset('app.ts') }}"></script>``.
 
 Finally run this command:
 
@@ -81,7 +67,7 @@ The first time you run one of the TypeScript commands, the bundle will download
 the correct SWC binary for your system into the ``var/`` directory.
 
 When you run ``typescript:build``, that binary is used to compile TypeScript files
-into a ``var/typescript/`` directory. Finally, when the contents of ``assets/typescript/app.ts``
+into a ``var/typescript/`` directory. Finally, when the contents of ``assets/app.ts``
 is requested, the bundle swaps the contents of that file with the contents of
 the ``var/typescript/`` directory.
 
