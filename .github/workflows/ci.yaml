@@ -35,6 +35,15 @@ jobs:
           - symfony-version: 7.2
             php: 8.4
             deps: high
+          - symfony-version: 7.3
+            php: 8.4
+            deps: high
+          - symfony-version: 7.4
+            php: 8.4
+            deps: high
+          - symfony-version: 8.0
+            php: 8.4
+            deps: high
     steps:
       - uses: actions/checkout@v3
         with:
