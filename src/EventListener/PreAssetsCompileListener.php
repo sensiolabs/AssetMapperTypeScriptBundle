@@ -19,7 +19,7 @@ class PreAssetsCompileListener
         $this->typeScriptBuilder
             ->setOutput($output);
         foreach ($this->typeScriptBuilder->createAllBuildProcess() as $process) {
-            $process->wait(function ($type, $buffer) use ($output) {
+            $process->wait(static function ($type, $buffer) use ($output) {
                 $output->write($buffer);
             });
 
