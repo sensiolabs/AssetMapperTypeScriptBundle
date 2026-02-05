@@ -15,7 +15,7 @@ Install the bundle:
 
 .. code-block:: terminal
 
-    $ composer require sensiolabs/typescript-bundle
+    composer require sensiolabs/typescript-bundle
 
 Usage
 -----
@@ -92,7 +92,7 @@ To see the full config from this bundle, run:
 
 .. code-block:: terminal
 
-    $ php bin/console config:dump sensiolabs_typescript
+    php bin/console config:dump sensiolabs_typescript
 
 The main option is ``source_dir``, which defaults to ``[%kernel.project_dir%/assets]``.
 This is an array of the directories that will be compiled.
