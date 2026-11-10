@@ -10,6 +10,7 @@ use Symfony\Component\AssetMapper\ImportMap\ImportMapType;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
+use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 
 class TypeDefinitionsInstallerTest extends TestCase
 {
@@ -155,6 +156,34 @@ class TypeDefinitionsInstallerTest extends TestCase
         $this->assertNotContains('https://data.jsdelivr.com/v1/packages/npm/@kurkle/color@0.3.4?structure=flat', $this->requestedUrls);
     }
 
+    public function testFallsBackToDefinitelyTypedForUntypedDependencies(): void
+    {
+        $installer = $this->createInstaller([
+            'https://data.jsdelivr.com/v1/packages/npm/typed@1.0.0?structure=flat' => ['files' => [
+                ['name' => '/package.json'],
+                ['name' => '/index.d.ts'],
+            ]],
+            'https://cdn.jsdelivr.net/npm/typed@1.0.0/package.json' => ['types' => 'index.d.ts', 'dependencies' => ['lodash' => '^4.17.0']],
+            'https://cdn.jsdelivr.net/npm/typed@1.0.0/index.d.ts' => 'import "lodash";',
+            'https://data.jsdelivr.com/v1/packages/npm/lodash/resolved?specifier=%5E4.17.0' => ['version' => '4.17.21'],
+            'https://data.jsdelivr.com/v1/packages/npm/lodash@4.17.21?structure=flat' => ['files' => [
+                ['name' => '/package.json'],
+                ['name' => '/lodash.js'],
+            ]],
+            'https://data.jsdelivr.com/v1/packages/npm/@types/lodash/resolved?specifier=4.17' => ['version' => '4.17.13'],
+            'https://data.jsdelivr.com/v1/packages/npm/@types/lodash@4.17.13?structure=flat' => ['files' => [
+                ['name' => '/package.json'],
+                ['name' => '/index.d.ts'],
+            ]],
+            'https://cdn.jsdelivr.net/npm/@types/lodash@4.17.13/package.json' => ['types' => 'index.d.ts'],
+            'https://cdn.jsdelivr.net/npm/@types/lodash@4.17.13/index.d.ts' => 'export declare const chunk: unknown;',
+        ]);
+
+        $installer->install([$this->createRemoteEntry('typed', '1.0.0')]);
+
+        $this->assertFileExists($this->typesDir.'/node_modules/@types/lodash/index.d.ts');
+    }
+
     public function testKeepsPreviousDeclarationFilesWhenTheDownloadFails(): void
     {
         $this->createInstaller([
@@ -171,7 +200,7 @@ class TypeDefinitionsInstallerTest extends TestCase
         try {
             $failingInstaller->install([$this->createRemoteEntry('left-pad', '1.3.0')]);
             $this->fail('The installation should have failed.');
-        } catch (\Throwable) {
+        } catch (HttpExceptionInterface) {
         }
 
         $this->assertFileExists($this->typesDir.'/node_modules/left-pad/index.d.ts');

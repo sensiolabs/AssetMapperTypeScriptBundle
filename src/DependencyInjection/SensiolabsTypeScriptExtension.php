@@ -33,11 +33,12 @@ class SensiolabsTypeScriptExtension extends Extension implements ConfigurationIn
             ->replaceArgument(5, $config['swc_config_file'])
             ->replaceArgument(6, $config['swc_version'])
         ;
-        $container->findDefinition('sensiolabs_typescript.types_installer')
-            ->replaceArgument(0, $config['types_dir'])
-        ;
         // The importmap entries API was introduced in Symfony 6.4
-        if (!class_exists(ImportMapConfigReader::class)) {
+        if (class_exists(ImportMapConfigReader::class)) {
+            $container->findDefinition('sensiolabs_typescript.types_installer')
+                ->replaceArgument(0, $config['types_dir'])
+            ;
+        } else {
             $container->removeDefinition('sensiolabs_typescript.types_installer');
             $container->removeDefinition('sensiolabs_typescript.command.types_install');
         }

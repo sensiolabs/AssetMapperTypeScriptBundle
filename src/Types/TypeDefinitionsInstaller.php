@@ -23,16 +23,13 @@ class TypeDefinitionsInstaller
     private const FILE_LIST_URL = 'https://data.jsdelivr.com/v1/packages/npm/%s@%s?structure=flat';
     private const RESOLVE_VERSION_URL = 'https://data.jsdelivr.com/v1/packages/npm/%s/resolved?specifier=%s';
 
-    // Export conditions a browser-targeted TypeScript resolution would pick, "types" being always tried first
-    private const EXPORT_CONDITIONS = ['types', 'import', 'module', 'browser', 'default'];
-
     private HttpClientInterface $httpClient;
     private Filesystem $filesystem;
 
     /**
      * Packages written to disk, keyed by name.
      *
-     * @var array<string, array{version: string, manifest: array<string, mixed>, files: array<string, true>}|null>
+     * @var array<string, array{version: string, manifests: array<string, array<string, mixed>>, files: array<string, true>}|null>
      */
     private array $packages = [];
 
@@ -120,7 +117,7 @@ class TypeDefinitionsInstaller
             return null;
         }
 
-        if (null === $entry = $this->resolveTypesEntry($packageName, $package['manifest'], $package['files'], $subpath)) {
+        if (null === $entry = PackageTypesResolver::resolve($package['manifests'], $package['files'], $subpath)) {
             return null;
         }
 
@@ -131,7 +128,7 @@ class TypeDefinitionsInstaller
      * Downloads the declaration files of a package, and queues its dependencies.
      * A package already written to disk is kept, whatever version is asked.
      *
-     * @return array{version: string, manifest: array<string, mixed>, files: array<string, true>}|null
+     * @return array{version: string, manifests: array<string, array<string, mixed>>, files: array<string, true>}|null
      */
     private function installPackage(string $packageName, string $version): ?array
     {
@@ -144,13 +141,13 @@ class TypeDefinitionsInstaller
         foreach ($this->fetchJson(\sprintf(self::FILE_LIST_URL, $packageName, $version))['files'] ?? [] as $file) {
             $name = ltrim($file['name'], '/');
             // File names come from a remote listing and end up as paths on disk
-            if (str_contains($name, '..') || (!self::isDeclarationFile($name) && 'package.json' !== basename($name))) {
+            if (str_contains($name, '..') || (!PackageTypesResolver::isDeclarationFile($name) && 'package.json' !== basename($name))) {
                 continue;
             }
             $files[$name] = true;
         }
 
-        if (!array_filter(array_keys($files), self::isDeclarationFile(...))) {
+        if (!array_filter(array_keys($files), PackageTypesResolver::isDeclarationFile(...))) {
             return null;
         }
 
@@ -158,15 +155,19 @@ class TypeDefinitionsInstaller
         foreach (array_keys($files) as $file) {
             $responses[$file] = $this->httpClient->request('GET', \sprintf(self::FILE_URL, $packageName, $version, $file));
         }
+        $manifests = [];
         foreach ($responses as $file => $response) {
-            $this->filesystem->dumpFile($this->buildDir.'/'.$packageName.'/'.$file, $response->getContent());
+            $content = $response->getContent();
+            $this->filesystem->dumpFile($this->buildDir.'/'.$packageName.'/'.$file, $content);
+            if ('package.json' === basename($file)) {
+                $decoded = json_decode($content, true, flags: 'package.json' === $file ? \JSON_THROW_ON_ERROR : 0);
+                $manifests[$file] = \is_array($decoded) ? $decoded : [];
+            }
         }
-
-        $manifest = json_decode(file_get_contents($this->buildDir.'/'.$packageName.'/package.json') ?: '{}', true, flags: \JSON_THROW_ON_ERROR);
-        $this->packages[$packageName] = ['version' => $version, 'manifest' => $manifest, 'files' => $files];
+        $this->packages[$packageName] = ['version' => $version, 'manifests' => $manifests, 'files' => $files];
 
         // Declaration files may import their dependencies, which TypeScript resolves by walking up node_modules
-        foreach ($manifest['dependencies'] ?? [] as $dependency => $range) {
+        foreach ($manifests['package.json']['dependencies'] ?? [] as $dependency => $range) {
             $this->pendingDependencies[] = [$dependency, $range];
         }
 
@@ -177,142 +178,16 @@ class TypeDefinitionsInstaller
     {
         while (null !== $pending = array_shift($this->pendingDependencies)) {
             [$dependency, $range] = $pending;
-            if (!\array_key_exists($dependency, $this->packages) && null !== $dependencyVersion = $this->resolveVersion($dependency, $range)) {
-                $this->installPackage($dependency, $dependencyVersion);
+            if (\array_key_exists($dependency, $this->packages) || null === $dependencyVersion = $this->resolveVersion($dependency, $range)) {
+                continue;
             }
-        }
-    }
-
-    /**
-     * Finds the declaration file TypeScript would load for "import 'package/subpath'".
-     *
-     * @param array<string, mixed> $manifest
-     * @param array<string, true>  $files
-     */
-    private function resolveTypesEntry(string $packageName, array $manifest, array $files, string $subpath): ?string
-    {
-        $candidates = [];
-        if (isset($manifest['exports']) && null !== $target = self::selectExportTarget($manifest['exports'], $subpath)) {
-            $candidates = self::resolveConditions($target);
-        }
-        if ('.' === $subpath) {
-            // Also tried after exports: some packages declare their types only at the top level
-            array_push($candidates, $manifest['types'] ?? $manifest['typings'] ?? null, $manifest['module'] ?? null, $manifest['main'] ?? null, 'index.js');
-        } elseif (!$candidates) {
-            $candidates = [$subpath];
-            // A subpath may have its own package.json, as exports did not exist yet
-            $nestedManifest = substr($subpath, 2).'/package.json';
-            if (isset($files[$nestedManifest])) {
-                $nested = json_decode(file_get_contents($this->buildDir.'/'.$packageName.'/'.$nestedManifest) ?: '{}', true);
-                foreach (['types', 'typings', 'module', 'main'] as $field) {
-                    if (\is_string($nested[$field] ?? null)) {
-                        $candidates[] = substr($subpath, 2).'/'.$nested[$field];
-                    }
+            if (null === $this->installPackage($dependency, $dependencyVersion)) {
+                $typesPackageName = self::getDefinitelyTypedName($dependency);
+                if (null !== $typesVersion = $this->resolveDefinitelyTypedVersion($typesPackageName, $dependencyVersion)) {
+                    $this->installPackage($typesPackageName, $typesVersion);
                 }
             }
         }
-
-        foreach ($candidates as $candidate) {
-            if (!\is_string($candidate)) {
-                continue;
-            }
-            foreach (self::getDeclarationCandidates(self::normalizePath($candidate)) as $declaration) {
-                if (isset($files[$declaration])) {
-                    return $declaration;
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private static function selectExportTarget(mixed $exports, string $subpath): mixed
-    {
-        if (!\is_array($exports) || array_is_list($exports) || !str_starts_with((string) array_key_first($exports), '.')) {
-            // Either a single target or a conditions object, both describing the root export only
-            return '.' === $subpath ? $exports : null;
-        }
-
-        if (isset($exports[$subpath])) {
-            return $exports[$subpath];
-        }
-
-        foreach ($exports as $pattern => $target) {
-            if (!str_contains($pattern, '*')) {
-                continue;
-            }
-            [$prefix, $suffix] = explode('*', $pattern, 2);
-            if (str_starts_with($subpath, $prefix) && str_ends_with($subpath, $suffix) && \strlen($subpath) >= \strlen($prefix.$suffix)) {
-                $match = substr($subpath, \strlen($prefix), \strlen($subpath) - \strlen($prefix) - \strlen($suffix));
-
-                return self::replaceWildcard($target, $match);
-            }
-        }
-
-        return null;
-    }
-
-    private static function replaceWildcard(mixed $target, string $match): mixed
-    {
-        if (\is_string($target)) {
-            return str_replace('*', $match, $target);
-        }
-
-        return \is_array($target) ? array_map(static fn ($value) => self::replaceWildcard($value, $match), $target) : $target;
-    }
-
-    /**
-     * @return list<string>
-     */
-    private static function resolveConditions(mixed $target): array
-    {
-        if (\is_string($target)) {
-            return [$target];
-        }
-        if (!\is_array($target)) {
-            return [];
-        }
-        if (array_is_list($target)) {
-            return array_merge(...array_map(self::resolveConditions(...), $target));
-        }
-
-        $candidates = isset($target['types']) ? self::resolveConditions($target['types']) : [];
-        foreach ($target as $condition => $value) {
-            if ('types' !== $condition && \in_array($condition, self::EXPORT_CONDITIONS, true)) {
-                $candidates = array_merge($candidates, self::resolveConditions($value));
-            }
-        }
-
-        return $candidates;
-    }
-
-    /**
-     * @return list<string>
-     */
-    private static function getDeclarationCandidates(string $path): array
-    {
-        if (self::isDeclarationFile($path)) {
-            return [$path];
-        }
-
-        if (preg_match('/^(.+)\.([mc]?)[jt]sx?$/', $path, $matches)) {
-            return 'c' === $matches[2] ? [] : [$matches[1].'.d.'.$matches[2].'ts'];
-        }
-
-        return [$path.'.d.ts', $path.'/index.d.ts'];
-    }
-
-    private static function normalizePath(string $path): string
-    {
-        $path = ltrim($path, '/');
-
-        return str_starts_with($path, './') ? substr($path, 2) : $path;
-    }
-
-    private static function isDeclarationFile(string $path): bool
-    {
-        // .d.cts files describe CommonJS builds, which a browser ESM import never loads
-        return (bool) preg_match('/\.d\.m?ts$/', $path);
     }
 
     /**

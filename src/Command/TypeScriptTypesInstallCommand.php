@@ -44,10 +44,15 @@ class TypeScriptTypesInstallCommand extends Command
         $io->table(['Import', 'Declaration files'], $rows);
 
         $tsConfigPath = Path::makeRelative($report->tsConfigPath, $this->projectDir);
-        $io->success(\sprintf('Declaration files installed. Extend "%s" from your tsconfig.json to use them.', $tsConfigPath));
-        $io->writeln(\sprintf('    "extends": "./%s"', $tsConfigPath));
+        $missing = $report->getMissingImports();
+        if (\count($missing) === \count($report->imports)) {
+            $io->warning('No declaration files were found for any package.');
+        } else {
+            $io->success(\sprintf('Declaration files installed. Extend "%s" from your tsconfig.json to use them.', $tsConfigPath));
+            $io->writeln(\sprintf('    "extends": "./%s"', $tsConfigPath));
+        }
 
-        if ($missing = $report->getMissingImports()) {
+        if ($missing) {
             $io->note(\sprintf('No declaration files found for "%s". Declare them in a local .d.ts file, e.g. declare module \'%s\';', implode('", "', $missing), $missing[0]));
         }
 

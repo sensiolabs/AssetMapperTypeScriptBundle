@@ -20,10 +20,12 @@ Install the bundle:
 Usage
 -----
 
-No configuration is required: by default, the bundle compiles the TypeScript
-files of the whole ``assets/`` directory. You can restrict it to the locations
-where your TypeScript files are with the ``sensiolabs_typescript.source_dir``
-option, which also avoids compiling the packages downloaded in ``assets/vendor/``.
+By default, the bundle compiles the TypeScript files of the whole ``assets/``
+directory, including the packages downloaded in ``assets/vendor/``. The SWC
+version used by default fails on a package directory whose name ends with ``.js``
+(e.g. ``assets/vendor/chart.js/``), so it is recommended to restrict the
+compilation to the locations where your TypeScript files are with the
+``sensiolabs_typescript.source_dir`` option.
 
 For instance, if your TypeScript code lives in ``assets/typescript/`` directory,
 with an ``assets/typescript/app.ts`` entrypoint file, set the option like this:
