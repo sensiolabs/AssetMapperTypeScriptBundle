@@ -20,8 +20,10 @@ Install the bundle:
 Usage
 -----
 
-Start by setting the ``sensiolabs_typescript.source_dir`` option to the list of
-locations where your TypeScript files are located.
+No configuration is required: by default, the bundle compiles the TypeScript
+files of the whole ``assets/`` directory. You can restrict it to the locations
+where your TypeScript files are with the ``sensiolabs_typescript.source_dir``
+option, which also avoids compiling the packages downloaded in ``assets/vendor/``.
 
 For instance, if your TypeScript code lives in ``assets/typescript/`` directory,
 with an ``assets/typescript/app.ts`` entrypoint file, set the option like this:
@@ -190,3 +192,76 @@ directory is meant to be regenerated rather than committed.
     these declaration files. Even with the language service, PhpStorm's
     navigation and quick documentation may still open those JavaScript files,
     while errors and autocompletion use the declaration files.
+
+Using TypeScript with Stimulus
+------------------------------
+
+`StimulusBundle <https://symfony.com/bundles/StimulusBundle/current/index.html>`_
+loads ``*_controller.ts`` files from ``assets/controllers/`` just like
+``*_controller.js`` ones, so moving a Stimulus app to TypeScript takes four steps.
+
+1. Compile only the directories holding your TypeScript files:
+
+   .. code-block:: yaml
+
+       # config/packages/sensiolabs_typescript.yaml
+       sensiolabs_typescript:
+           source_dir: ['%kernel.project_dir%/assets/controllers']
+
+   Compiling the whole ``assets/`` directory also compiles ``assets/vendor/``,
+   where the SWC version used by default fails on package directories whose
+   name ends with ``.js`` (e.g. ``assets/vendor/chart.js/``).
+
+2. Install the type definitions of your importmap packages, including
+   ``@hotwired/stimulus``, and create a ``tsconfig.json`` extending them (see
+   `Type definitions of importmap packages`_):
+
+   .. code-block:: terminal
+
+       $ php bin/console typescript:types:install
+
+3. Rename a controller from ``.js`` to ``.ts`` and **delete the** ``.js`` **file**:
+   when both exist, StimulusBundle ignores the ``.ts`` one. Files that do not
+   need types, such as ``assets/stimulus_bootstrap.js``, can stay in JavaScript.
+
+4. Type the controller. Stimulus creates the target and value properties at
+   runtime, so declare them with ``declare`` to let TypeScript know about them
+   without emitting any code:
+
+   .. code-block:: typescript
+
+       // assets/controllers/greet_controller.ts
+       import { Controller } from '@hotwired/stimulus';
+
+       export default class extends Controller<HTMLElement> {
+           static targets = ['name', 'output'];
+           static values = { greeting: { type: String, default: 'Hello' } };
+
+           declare readonly nameTarget: HTMLInputElement;
+           declare readonly outputTarget: HTMLElement;
+           declare readonly hasOutputTarget: boolean;
+           declare greetingValue: string;
+
+           greet(event: Event): void {
+               event.preventDefault();
+
+               if (this.hasOutputTarget) {
+                   this.outputTarget.textContent = `${this.greetingValue}, ${this.nameTarget.value}!`;
+               }
+           }
+       }
+
+   .. code-block:: html+twig
+
+       <form data-controller="greet" data-greet-greeting-value="Bonjour" data-action="greet#greet">
+           <input data-greet-target="name">
+           <button>Greet</button>
+           <p data-greet-target="output"></p>
+       </form>
+
+   The generic parameter of ``Controller`` types ``this.element``. See the
+   `Stimulus TypeScript reference <https://stimulus.hotwired.dev/reference/using-typescript>`_
+   for outlets, classes and the other typing patterns.
+
+Then run ``php bin/console typescript:build --watch`` while developing, as for
+any other TypeScript file.
