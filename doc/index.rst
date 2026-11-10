@@ -132,3 +132,50 @@ the the path to your `.swcrc <https://swc.rs/docs/configuration/swcrc>`_ file:
     # config/packages/asset_mapper.yaml
     sensiolabs_typescript:
         swc_config_file: '%kernel.project_dir%/.swcrc'
+
+Type definitions of importmap packages
+--------------------------------------
+
+SWC strips types without checking them, so a missing type definition only shows
+up in your IDE or when running ``tsc``: AssetMapper downloads the JavaScript of
+your importmap packages, but not their declaration files, which leads to
+``TS2307: Cannot find module '@hotwired/stimulus'`` errors.
+
+Run the following command to download the declaration files of every package in
+your ``importmap.php``, at the exact version it pins (requires AssetMapper 6.4 or
+higher):
+
+.. code-block:: terminal
+
+    $ php bin/console typescript:types:install
+
+The declaration files come from the package itself when it ships them, or from
+its ``@types/*`` package on `DefinitelyTyped <https://github.com/DefinitelyTyped/DefinitelyTyped>`_
+otherwise. They are written into the ``types_dir`` directory (default:
+``%kernel.project_dir%/var/typescript-types``), along with a
+``tsconfig.importmap.json`` file mapping each import name to its declaration
+file. Extend it from your ``tsconfig.json``:
+
+.. code-block:: json
+
+    {
+        "extends": "./var/typescript-types/tsconfig.importmap.json",
+        "compilerOptions": {
+            "module": "ESNext",
+            "moduleResolution": "bundler",
+            "strict": true
+        }
+    }
+
+Run the command again after each ``importmap:require``, ``importmap:update`` or
+``importmap:remove``, and after cloning the project: like ``assets/vendor/``, the
+directory is meant to be regenerated rather than committed.
+
+.. note::
+
+    The ``paths`` option is not merged by ``extends``: if your ``tsconfig.json``
+    defines its own ``paths``, copy the generated entries into it. Likewise, a
+    ``baseUrl`` option changes how the generated relative paths are resolved.
+
+    For a package with no declaration files at all, declare the module in a
+    local ``.d.ts`` file, e.g. ``declare module 'some-package';``.

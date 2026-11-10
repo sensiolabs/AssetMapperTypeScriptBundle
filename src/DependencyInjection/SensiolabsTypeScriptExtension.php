@@ -2,6 +2,7 @@
 
 namespace Sensiolabs\TypeScriptBundle\DependencyInjection;
 
+use Symfony\Component\AssetMapper\ImportMap\ImportMapConfigReader;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\FileLocator;
@@ -32,6 +33,14 @@ class SensiolabsTypeScriptExtension extends Extension implements ConfigurationIn
             ->replaceArgument(5, $config['swc_config_file'])
             ->replaceArgument(6, $config['swc_version'])
         ;
+        $container->findDefinition('sensiolabs_typescript.types_installer')
+            ->replaceArgument(0, $config['types_dir'])
+        ;
+        // The importmap entries API was introduced in Symfony 6.4
+        if (!class_exists(ImportMapConfigReader::class)) {
+            $container->removeDefinition('sensiolabs_typescript.types_installer');
+            $container->removeDefinition('sensiolabs_typescript.command.types_install');
+        }
         $container->findDefinition('sensiolabs_typescript.js_asset_compiler')
             ->replaceArgument(0, $config['source_dir'])
             ->replaceArgument(1, $config['compile_dir'])
@@ -72,6 +81,10 @@ class SensiolabsTypeScriptExtension extends Extension implements ConfigurationIn
                 ->scalarNode('compile_dir')
                     ->info('The directory where the compiled JavaScript files will be stored')
                     ->defaultValue('%kernel.project_dir%/var/typescript')
+                ->end()
+                ->scalarNode('types_dir')
+                    ->info('The directory where the TypeScript declaration files of the importmap packages will be downloaded')
+                    ->defaultValue('%kernel.project_dir%/var/typescript-types')
                 ->end()
                 ->scalarNode('swc_binary')
                     ->info('The SWC binary to use')
