@@ -179,3 +179,14 @@ directory is meant to be regenerated rather than committed.
 
     For a package with no declaration files at all, declare the module in a
     local ``.d.ts`` file, e.g. ``declare module 'some-package';``.
+
+.. tip::
+
+    IDEs check types through the TypeScript language service, which runs on
+    Node.js: in PhpStorm, set a Node interpreter in *Languages & Frameworks >
+    TypeScript*. Node.js is then only needed by the IDE, never to build or
+    deploy your assets. Without it, PhpStorm falls back to its own engine, which
+    resolves imports to the JavaScript files of ``assets/vendor/`` and ignores
+    these declaration files. Even with the language service, PhpStorm's
+    navigation and quick documentation may still open those JavaScript files,
+    while errors and autocompletion use the declaration files.
