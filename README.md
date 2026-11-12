@@ -12,6 +12,7 @@ This bundle allows you to compile TypeScript and use it with Symfony's AssetMapp
 - Automatically downloads the correct [SWC](https://github.com/swc-project/swc) binary
 - Adds a ``typescript:build`` command to compile your typescript files
 - Automatically compiles your typescript files when you run ``asset-map:compile`` command
+- Adds a ``typescript:types:install`` command to download the declaration files of your importmap packages
 
 ## Installation
 ```bash

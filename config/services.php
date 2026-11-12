@@ -3,8 +3,10 @@
 use Sensiolabs\TypeScriptBundle\AssetMapper\TypeScriptCompiler;
 use Sensiolabs\TypeScriptBundle\AssetMapper\TypeScriptPublicPathAssetPathResolver;
 use Sensiolabs\TypeScriptBundle\Command\TypeScriptBuildCommand;
+use Sensiolabs\TypeScriptBundle\Command\TypeScriptTypesInstallCommand;
 use Sensiolabs\TypeScriptBundle\EventListener\PreAssetsCompileListener;
 use Sensiolabs\TypeScriptBundle\TypeScriptBuilder;
+use Sensiolabs\TypeScriptBundle\Types\TypeDefinitionsInstaller;
 use Symfony\Component\AssetMapper\Event\PreAssetsCompileEvent;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 
@@ -27,6 +29,18 @@ return static function (ContainerConfigurator $container) {
         ->set('sensiolabs_typescript.command.build', TypeScriptBuildCommand::class)
             ->args([
                 service('sensiolabs_typescript.builder')
+            ])
+            ->tag('console.command')
+        ->set('sensiolabs_typescript.types_installer', TypeDefinitionsInstaller::class)
+            ->args([
+                abstract_arg('path to the types directory'),
+                service('http_client')->nullOnInvalid(),
+            ])
+        ->set('sensiolabs_typescript.command.types_install', TypeScriptTypesInstallCommand::class)
+            ->args([
+                service('asset_mapper.importmap.config_reader'),
+                service('sensiolabs_typescript.types_installer'),
+                param('kernel.project_dir'),
             ])
             ->tag('console.command')
         ->set('sensiolabs_typescript.js_asset_compiler', TypeScriptCompiler::class)
